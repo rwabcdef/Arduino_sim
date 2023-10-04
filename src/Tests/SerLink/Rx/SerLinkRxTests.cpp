@@ -36,7 +36,11 @@ static void Set_UDRIE0_CallBack();
 static void Clr_UDRIE0_CallBack();
 static void uartTxRun();
 
-
+// Called when the line: sbi(UCSR0B, UDRIE0);
+// is called from: uart_write(char* buffer)   in uart.c
+// In the Arduino it sets the UDRIE0 bit in the UCSR0B register.
+// On the PC, it sets g_enable_USART_UDRE_ISR = true;
+// and registers the uartTxRun interrupt to be fired in 200 uS time.
 static void Set_UDRIE0_CallBack()
 {
   debugPrint->writeLine("Set_UDRIE0_CallBack", DebugPrint_defs::UartTx);
@@ -50,6 +54,8 @@ static void Set_UDRIE0_CallBack()
   interruptRunner->RegisterInterruptSchedule(nextCharRun);
 }
 
+// Run by the interrupt thread.
+// Calls the ISR: UART_ISR_TX
 static void uartTxRun()
 {
   cli();
@@ -76,6 +82,9 @@ static void uartTxRun()
   }
   debugPrint->writeLine(s, DebugPrint_defs::UartTx);
 
+  // If the UART_ISR_TX interrupt is still enabled
+  //(it is disabled in the UART_ISR_TX when the last character has been sent)
+  // then trigger another interrupt to fire after the current character has been sent.
   if(g_enable_USART_UDRE_ISR)
   {
     // Initialise another ISR trigger
