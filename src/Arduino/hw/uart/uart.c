@@ -61,6 +61,8 @@ ISR(USART_RX_vect)
   }
 }
 //--------------------------------------------------------------------------------
+// Data register empty ISR.
+// Called when the character has been sent from the uart tx pin.
 ISR(USART_UDRE_vect)
 {
   g_txChar = g_tx[g_txIndex];
