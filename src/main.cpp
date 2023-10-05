@@ -43,8 +43,8 @@ bool runAllTests(int argc, char const *argv[]) {
 
   //bind = []() { SerLinkRxTests::test2(); }; s.push_back(bind);
 
-  //bind = []() { SerLinkTxTests::test1(); }; s.push_back(bind);
-  bind = []() { ButtonTests::test1(); }; s.push_back(bind);
+  bind = []() { SerLinkTxTests::test1(); }; s.push_back(bind);
+  //bind = []() { ButtonTests::test1(); }; s.push_back(bind);
 
 
   cute::xml_file_opener xmlfile(argc, argv);

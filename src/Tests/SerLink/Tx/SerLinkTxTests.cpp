@@ -104,9 +104,10 @@ void SerLinkTxTests::test1()
 
   uint64_t current = 0;
 
-  InitTimestamp();
+  //InitTimestamp();
   //initSys(5000);
 
+  initDebug();
   initRun(20000);
 //  InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);
 //  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
@@ -148,8 +149,8 @@ void SerLinkTxTests::test1()
 
   if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT)
   {
-    ASSERT(current == 5000);
-    ASSERT_EQUAL(5000, current);
-    ASSERT_EQUAL(5, swTimer_tickElapsed(startTick));
+    ASSERT(current == 20000);
+    ASSERT_EQUAL(20000, current);
+    ASSERT_EQUAL(20, swTimer_tickElapsed(startTick));
   }
 }
