@@ -64,8 +64,10 @@ void initRun(uint32_t simTicks)
   mainThreadId = std::this_thread::get_id();
 
   //debugPrint = new DebugPrint(&MakeTimestamp);
+  // Each simClk tick (uS), runs the configured interrupt routines (ISRs)
   interruptRunner = new InterruptRunner(debugPrint);
 
+  //
   std::function<void(uint64_t)> tickBind = [](uint64_t tick) { interruptRunner->tickRun(tick); };
   simClk = new SimClk(simTicks, tickBind, 7854983);
 

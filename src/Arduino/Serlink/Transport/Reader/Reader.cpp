@@ -21,6 +21,7 @@ using namespace SerLink;
 Reader::Reader(uint8_t id)
 {
 	this->id = id;
+	this->rxFlag = false;
 	//this->rxBuffer = rxBuffer;
 	//this->ackBuffer = ackBuffer;
 	this->bufferLen = UART_BUFF_LEN;
@@ -29,7 +30,23 @@ Reader::Reader(uint8_t id)
 	this->debugLevel = DebugPrint_defs::UartRx;
 	this->debugOn = true;
 
-	uart_init((char*) this->rxBuffer, this->bufferLen);
+	for(uint8_t i=0; i<READER_CONFIG__MAX_NUM_INSTANT_HANDLERS; i++)
+	{
+	  this->handlerRegistrations[i].handler = nullptr;
+	  memset(this->handlerRegistrations[i].protocol, 0, Frame::LEN_PROTOCOL);
+	}
+	this->numInstantHandlers = 0;
+
+#ifdef READER_CONFIG__READER0
+
+  if(this->id == READER_CONFIG__READER0_ID)
+  {
+    // Initialise uart hardware & driver layer
+    uart_init((char*) this->rxBuffer, this->bufferLen);
+  }
+
+#endif
+
 }
 void Reader::run()
 {
@@ -46,18 +63,64 @@ char* Reader::getCurrentStateName()
 
 }
 
+bool Reader::registerInstantCallback(char* protocol, readHandler handler)
+{
+  if(this->numInstantHandlers < (READER_CONFIG__MAX_NUM_INSTANT_HANDLERS - 1))
+  {
+    strncpy(this->handlerRegistrations[this->numInstantHandlers].protocol, protocol, Frame::LEN_PROTOCOL);
+    this->handlerRegistrations[this->numInstantHandlers].handler = handler;
+    this->numInstantHandlers++;
+    return true;
+  }
+  else
+  {
+    // No more registrations are available
+    return false;
+  }
+}
+
+readHandler Reader::getInstantHandler(char* protocol)
+{
+  for(uint8_t i=0; i<READER_CONFIG__MAX_NUM_INSTANT_HANDLERS; i++)
+  {
+    if(0 == strncmp(this->handlerRegistrations[i].protocol, protocol, Frame::LEN_PROTOCOL))
+    {
+      return this->handlerRegistrations[i].handler;
+    }
+  }
+  return nullptr;
+}
+
+bool Reader::getRxFrame(Frame& rxFrame)
+{
+  if(this->rxFlag)
+  {
+    this->rxFlag = false;
+
+    this->rxFrame.copy(&rxFrame);
+
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+//-----------------------------------------------------------------
+// Start of state methods
+
 uint8_t Reader::idle()
 {
 
 	cli();
-	if(this->checkFrameRx())
+	if(this->checkUartFrameRx())
 	{
-		uint8_t rxLen = this->getRxLenAndReset();
+		uint8_t rxLen = this->getUartRxLenAndReset();
 
-
-
-		//Frame::fromString((char*) this->rxBuffer, &this->rxFrame);
+		// Read frame from uart.
 		Frame::fromString((char*) this->rxBuffer, &this->rxFrame);
+
+		this->rxFlag = true;
 
 		if(this->rxFrame.type == Frame::TYPE_TRANSMISSION)
 		{
@@ -65,6 +128,19 @@ uint8_t Reader::idle()
 			this->ackFrame.type = Frame::TYPE_ACK;
 			this->ackFrame.dataLen = Frame::ACK_OK;
 			memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
+
+			readHandler instantHandler = this->getInstantHandler(this->rxFrame.protocol);
+			if(instantHandler == nullptr)
+			{
+			  // No instant (i.e. piggyback) handler has been found - so do nothing.
+			}
+			else
+			{
+			  // An instant (i.e. piggyback) handler has been found for this protocol,
+			  // so call it now.
+			  // The instant handler callback sets the ackFrame's data & dataLen.
+			  instantHandler(this->rxFrame, &this->ackFrame.dataLen, this->ackFrame.data);
+			}
 
 			swTimer_tickReset(&this->startTick);
 
@@ -114,7 +190,7 @@ uint8_t Reader::ackDelay()
 		sprintf(this->s, "ack frame: %s\n\0", this->ackBuffer);
 		this->debugWrite(this->s);
 
-		this->write((char*)this->ackBuffer);
+		this->uartWrite((char*)this->ackBuffer);
 		//this->write((char*)"hello\n\0");
 
 		return TXACKWAIT;
@@ -123,7 +199,7 @@ uint8_t Reader::ackDelay()
 }
 uint8_t Reader::txAckWait()
 {
-	if(!this->getTxBusy())
+	if(!this->getUartTxBusy())
 	{
 		sprintf(this->s, "Reader::txAckWait() done\n\0", 0);
 		this->debugWrite(this->s);
@@ -131,8 +207,9 @@ uint8_t Reader::txAckWait()
 	}
 	return TXACKWAIT;
 }
+// end of state methods
 //-------------------------------------------------------------
-bool Reader::checkFrameRx()
+bool Reader::checkUartFrameRx()
 {
 #ifdef READER_CONFIG__READER0
 
@@ -143,7 +220,7 @@ bool Reader::checkFrameRx()
 
 #endif
 }
-uint8_t Reader::getRxLenAndReset()
+uint8_t Reader::getUartRxLenAndReset()
 {
 #ifdef READER_CONFIG__READER0
 
@@ -154,7 +231,7 @@ uint8_t Reader::getRxLenAndReset()
 
 #endif
 }
-uint8_t Reader::write(char* buffer)
+uint8_t Reader::uartWrite(char* buffer)
 {
 #ifdef READER_CONFIG__READER0
 
@@ -165,7 +242,7 @@ uint8_t Reader::write(char* buffer)
 
 #endif
 }
-bool Reader::getTxBusy()
+bool Reader::getUartTxBusy()
 {
 #ifdef READER_CONFIG__READER0
 

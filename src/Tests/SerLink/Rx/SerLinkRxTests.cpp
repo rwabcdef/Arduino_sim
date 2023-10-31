@@ -5,6 +5,7 @@
  *      Author: rw123
  */
 
+#include <stdarg.h>
 #include "SerLinkRxTests.hpp"
 #include "env.hpp"
 #include "Global.hpp"
@@ -14,7 +15,8 @@
 #include "cute.h"
 #include "uart_wrapper.hpp"
 #include "Frame.hpp"
-#include "Reader_config.hpp"
+//#include "Reader_config.hpp"
+#include "Reader.hpp"
 #include "DebugUser.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,6 +105,17 @@ static void Clr_UDRIE0_CallBack()
   g_enable_USART_UDRE_ISR = false;
 }
 
+// Instant rx handler (i.e. payload goes into ack frame of reader)
+static void testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* data)
+{
+  uint8_t pRetCode;
+  rxFrame.toString(debugStr, &pRetCode);
+  debugPrint->writeLine(debugStr, DebugPrint_defs::UnitTest0);
+
+  sprintf(data, "Echo: ");
+  strncpy(&data[6], rxFrame.data, (long) rxFrame.dataLen);
+  *dataLen = rxFrame.dataLen + 6;
+}
 //------------------------------------------------
 
 void SerLinkRxTests::test1()
@@ -177,8 +190,8 @@ void SerLinkRxTests::test1()
     ASSERT_EQUAL(5, swTimer_tickElapsed(startTick));
   }
 }
-
-void SerLinkRxTests::test2()
+//------------------------------------------------
+void SerLinkRxTests::instantHandler1()
 {
   char s[256] = {0};
   Event uartRx(uartRxHandler);
@@ -197,7 +210,10 @@ void SerLinkRxTests::test2()
   //InitTimestamp();
   initDebug();
   //initSys(5000);
-  SerLink::Reader *reader0 = new SerLink::Reader(READER_CONFIG__READER0_ID);
+  //SerLink::Reader *reader0 = new SerLink::Reader(READER_CONFIG__READER0_ID);
+  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
+
+  reader0.registerInstantCallback("TST08", testReadHandler);
 
   initRun(50000);
   InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);
@@ -225,7 +241,8 @@ void SerLinkRxTests::test2()
       //x = true;
     }
 
-    reader0->run();
+    //reader0->run();
+    reader0.run();
 
 //    cli();
 //    if(uart_checkFrameRx())
@@ -259,6 +276,101 @@ void SerLinkRxTests::test2()
 
 }
 
+//------------------------------------------------
+void SerLinkRxTests::stdRx1()
+{
+  char s[256] = {0};
+  Event uartRx(uartRxHandler);
+  volatile char rxBuffer[UART_BUFF_LEN];
+  volatile char readerRxBuffer[UART_BUFF_LEN];
+  volatile char readerAckBuffer[UART_BUFF_LEN];
+  char uartRxDebugStr[128];
+  SerLink::Frame rxFrame;
+  uint16_t startTick;
+  swTimer_tickReset(&startTick);
+
+  uint64_t current = 0;
+
+
+
+  //InitTimestamp();
+  initDebug();
+  //initSys(5000);
+  //SerLink::Reader *reader0 = new SerLink::Reader(READER_CONFIG__READER0_ID);
+  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
+
+  initRun(50000);
+  InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);
+  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+//
+  setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
+  setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
+
+  debugPrint->writeLine("pA", DebugPrint_defs::Zero);
+
+  sei();
+  simClk->start();
+
+  do
+  {
+    current = simClk->getCurrent();
+    if(4000 == current)
+    //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
+    {
+      debugPrint->writeLine("pA", DebugPrint_defs::Zero);
+      //printf("pB");
+
+      //printf("mainThreadId: 0x%x\n", std::hash<std::thread::id>{}(mainThreadId));
+      //printf("intThreadId:  0x%x\n", std::hash<std::thread::id>{}(intThreadId));
+      //x = true;
+    }
+
+    //reader0->run();
+    reader0.run();
+
+    // poll reader0 to check if a frame has been received.
+    if(reader0.getRxFrame(rxFrame))
+    {
+      // Frame received
+
+      uint8_t pRetCode;
+      sprintf(debugStr, "Rx Frame: ", 0);
+      rxFrame.toString(&debugStr[10], &pRetCode);
+      debugPrint->writeLine(debugStr, DebugPrint_defs::UnitTest0);
+    }
+
+//    cli();
+//    if(uart_checkFrameRx())
+//    {
+//      uint8_t rxLen = uart_getRxLenAndReset();
+//
+//      sprintf(s, "uart rx: %s", rxBuffer);
+//
+//      debugPrint->writeLine(s, DebugPrint_defs::UartRx);
+//    }
+//    sei();
+
+
+  }while(!simClk->getDone());
+
+  //simClk->join(); // Wait for simClk thread to completely terminate
+  //endSys();
+  endRun();
+
+
+  //ASSERT_EQUALM("x should be 5", 5, current);
+
+  if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT)
+  {
+    //ASSERT(current == 50000);
+    //ASSERT_EQUAL(50000, current);
+    ASSERT_GREATER_EQUAL(50000, current);
+    ASSERT_LESS_EQUAL(current, 50010);
+    ASSERT_EQUAL(50, swTimer_tickElapsed(startTick));
+  }
+
+}
+//---------------------------------------------------------------
 void uartRxHandler(void* pData)
 {
   uint64_t n = (uint64_t)pData;

@@ -38,6 +38,7 @@ void InterruptRunner::clear()
   this->pSchedulers.clear();
 }
 
+// Called by the SimClk object each tick, in order to run the required interrupt routines (ISRs).
 void InterruptRunner::tickRun(const uint64_t tick)
 {
 	std::list<InterruptSchedule*> removeIist;

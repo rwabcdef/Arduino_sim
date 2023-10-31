@@ -1,2 +1,4 @@
 # ignore ALL .exe files
 *.exe
+Debug/ard_prj3.exe
+/Debug/

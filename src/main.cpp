@@ -41,9 +41,11 @@ bool runAllTests(int argc, char const *argv[]) {
 //  bind = []() { BasicHwTests::test1(); }; s.push_back(bind);
 //  bind = []() { BasicHwTests::test2(); }; s.push_back(bind);
 
-  //bind = []() { SerLinkRxTests::test2(); }; s.push_back(bind);
+  // Rx of frame: "TST08T0750076ABC07C\n" and subsequent Tx of ack frame
+  //bind = []() { SerLinkRxTests::instantHandler1(); }; s.push_back(bind);
+  bind = []() { SerLinkRxTests::stdRx1(); }; s.push_back(bind);
 
-  bind = []() { SerLinkTxTests::test1(); }; s.push_back(bind);
+  //bind = []() { SerLinkTxTests::test1(); }; s.push_back(bind);
   //bind = []() { ButtonTests::test1(); }; s.push_back(bind);
 
 
@@ -103,7 +105,8 @@ int main(int argc, char const *argv[])
 	if(TESTSYS_mode == TESTSYS_TEST_MODE_NONE){
 	  //BasicHwTests::test1();
 	  //SerLinkTxTests::test1();
-	  SerLinkRxTests::test2();
+	  //SerLinkRxTests::instantHandler1();
+	  SerLinkRxTests::stdRx1();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){

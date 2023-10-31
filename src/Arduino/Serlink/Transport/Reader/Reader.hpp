@@ -17,7 +17,8 @@
 
 namespace SerLink
 {
-typedef void (*readHandler)(const TransportData* pRxData, TransportData* pAckData);
+typedef void (*readHandler)(Frame &rxFrame, uint16_t* dataLen, char* data);
+//typedef void (*readHandler)(const TransportData* pRxData, TransportData* pAckData);
 /*
 typedef void (*reader_uart_init)(char* pRxBuffer, uint8_t rxBufferLen);
 typedef bool (*reader_uart_checkFrameRx)();
@@ -35,10 +36,17 @@ public:
 class Reader : public StateMachine, public DebugUser
 {
 private:
+  class HandlerRegistration{
+  public:
+    char protocol[Frame::LEN_PROTOCOL];
+    readHandler handler;
+  };
+
 	//const uint8_t IDLE = 0;
 	//const uint8_t ACKDELAY = 1;
 	//const uint8_t TXACKWAIT = 2;
 	uint8_t id;
+	bool rxFlag;
 	// char* rxBuffer;
 	//volatile char* ackBuffer;
 	uint8_t bufferLen;
@@ -49,18 +57,36 @@ private:
 	char s[64];
 	Frame rxFrame;
 	Frame ackFrame;
+	HandlerRegistration handlerRegistrations[READER_CONFIG__MAX_NUM_INSTANT_HANDLERS];
+	uint8_t numInstantHandlers;
 
 	uint8_t idle();
 	uint8_t ackDelay();
 	uint8_t txAckWait();
 
-	bool checkFrameRx();
-	uint8_t getRxLenAndReset();
-	uint8_t write(char* buffer);
-	bool getTxBusy();
+	//-------------------------------------
+	// Uart Interface
+
+	// Checks uart layer (below) to see if a frame has been received.
+	bool checkUartFrameRx();
+	// Gets received frame length (and resets rx flag) from uart layer.
+	uint8_t getUartRxLenAndReset();
+	// write buffer to uart layer.
+	uint8_t uartWrite(char* buffer);
+  // returns whether or not uart tx is busy.
+	bool getUartTxBusy();
+	//-------------------------------------
+
+
+
+	readHandler getInstantHandler(char* protocol);
+
 public:
 	Reader(uint8_t id); // , DebugPrint* debugPrint = nullptr
 	void run();
+	bool registerInstantCallback(char* protocol, readHandler handler);
+	bool getRxFrame(Frame& rxFrame);
+
 	uint8_t getCurrentState();
 	char* getCurrentStateName();
 };

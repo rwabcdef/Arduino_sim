@@ -9,9 +9,11 @@
 #define READER_CONFIG_HPP_
 
 #include "env.h"
-#include "Reader.hpp"
+//#include "Reader.hpp"
 
 #define READER_CONFIG__READER0
+
+#define READER_CONFIG__MAX_NUM_INSTANT_HANDLERS 5
 
 //----------------------------------------------------------
 // READER0
