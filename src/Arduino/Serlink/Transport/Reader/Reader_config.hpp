@@ -21,7 +21,7 @@
 
 #include "uart_wrapper.hpp"
 
-#define READER_CONFIG__READER0_ID 0 // READER0 instance id
+#define READER_CONFIG__READER0_ID 1 // READER0 instance id
 
 //#define READER_CONFIG__READER0_UART_INIT uart_init
 

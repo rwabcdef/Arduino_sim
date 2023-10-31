@@ -10,6 +10,7 @@
 
 #include "Reader_config.hpp"
 #include "StateMachine.hpp"
+#include "Writer.hpp"
 #include "Frame.hpp"
 #include "Transport.hpp"
 #include "DebugPrint.hpp"
@@ -47,6 +48,7 @@ private:
 	//const uint8_t TXACKWAIT = 2;
 	uint8_t id;
 	bool rxFlag;
+	Writer* writer;
 	// char* rxBuffer;
 	//volatile char* ackBuffer;
 	uint8_t bufferLen;
@@ -82,7 +84,7 @@ private:
 	readHandler getInstantHandler(char* protocol);
 
 public:
-	Reader(uint8_t id); // , DebugPrint* debugPrint = nullptr
+	Reader(uint8_t id, Writer* writer = nullptr); // , DebugPrint* debugPrint = nullptr
 	void run();
 	bool registerInstantCallback(char* protocol, readHandler handler);
 	bool getRxFrame(Frame& rxFrame);

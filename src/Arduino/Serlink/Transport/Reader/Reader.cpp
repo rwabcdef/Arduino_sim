@@ -18,9 +18,9 @@
 using namespace SerLink;
 
 
-Reader::Reader(uint8_t id)
+Reader::Reader(uint8_t id, Writer* writer) : id(id), writer(writer)
 {
-	this->id = id;
+	//this->id = id;
 	this->rxFlag = false;
 	//this->rxBuffer = rxBuffer;
 	//this->ackBuffer = ackBuffer;
@@ -156,11 +156,21 @@ uint8_t Reader::idle()
 		}
 		else if(this->rxFrame.type == Frame::TYPE_UNIDIRECTION)
 		{
-
+		  // Received Frame is unidirectional - so do nothing
 		}
+		else if(this->rxFrame.type == Frame::TYPE_ACK)
+    {
+      // Received Frame is an ack frame
+
+		  if(this->writer != nullptr)
+		  {
+		    // Pass received frame onto the associated Writer.
+		    this->writer->setAckFrame(this->rxFrame);
+		  }
+    }
 		else
 		{
-
+		  // Un-recognised frame type
 		}
 //
 //		swTimer_tickReset(&this->startTick);
