@@ -16,7 +16,7 @@ class DebugUser
 protected:
 	DebugPrint_defs::Levels debugLevel;
 public:
-	bool debugOn = false;
+	bool debugOn;
 	void debugWrite(char* str);
 
 };

@@ -22,13 +22,13 @@ public:
 	static const int LEN_TYPE = 1;
 	static const int LEN_ROLLCODE = 3;
 	static const int LEN_DATALEN = 3;
-    static const int LEN_HEADER = LEN_PROTOCOL + LEN_TYPE + LEN_ROLLCODE + LEN_DATALEN;
-    static const int INDEX_START_PROTOCOL = 0;
-    static const int INDEX_START_TYPE = LEN_PROTOCOL;
-    static const int INDEX_START_ROLLCODE = INDEX_START_TYPE + LEN_TYPE;
-    static const int INDEX_START_DATALEN = INDEX_START_ROLLCODE + LEN_ROLLCODE;
-    static const int INDEX_START_DATA = INDEX_START_DATALEN + LEN_DATALEN;
-    static const int MAX_DATALEN = 64;
+  static const int LEN_HEADER = LEN_PROTOCOL + LEN_TYPE + LEN_ROLLCODE + LEN_DATALEN;
+  static const int INDEX_START_PROTOCOL = 0;
+  static const int INDEX_START_TYPE = LEN_PROTOCOL;
+  static const int INDEX_START_ROLLCODE = INDEX_START_TYPE + LEN_TYPE;
+  static const int INDEX_START_DATALEN = INDEX_START_ROLLCODE + LEN_ROLLCODE;
+  static const int INDEX_START_DATA = INDEX_START_DATALEN + LEN_DATALEN;
+  static const int MAX_DATALEN = 64;
 
     // DataLen (Ack code) return codes
     static const int ACK_OK = 900;

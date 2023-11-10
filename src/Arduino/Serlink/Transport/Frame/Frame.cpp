@@ -6,6 +6,7 @@
  */
 #include "Frame.hpp"
 #include<string.h>
+#include<stdlib.h>
 #include <stdio.h>
 
 using namespace SerLink;
@@ -32,31 +33,30 @@ Frame::Frame(char* pProtocol, char type, uint16_t rollCode, uint16_t dataLen, ch
 
 void Frame::toString(char* const pStr, uint8_t* pRetCode)
 {
+  uint16_t eofIndex;
+  if(this->dataLen >= Frame::ACK_OK)
+  {
+    eofIndex = Frame::LEN_HEADER;
+  }
+  else
+  {
+    eofIndex = Frame::LEN_HEADER + this->dataLen;
+  }
+
+  // clear buffer
+  memset(pStr, 0, eofIndex + 2);
+
 	strncpy(pStr, this->protocol, Frame::LEN_PROTOCOL);
 	pStr[Frame::INDEX_START_TYPE] = this->type;
 	Frame::int3dToStr(this->rollCode, &pStr[Frame::INDEX_START_ROLLCODE]);
 	Frame::int3dToStr(this->dataLen, &pStr[Frame::INDEX_START_DATALEN]);
 
-	uint16_t eofIndex;
-	if(this->dataLen >= Frame::ACK_OK)
+	if(this->dataLen < Frame::ACK_OK)
 	{
-	  eofIndex = Frame::LEN_HEADER;
-	}
-	else
-	{
+	  // Copy data
 	  strncpy(&pStr[Frame::INDEX_START_DATA], this->data, this->dataLen);
-	  eofIndex = Frame::LEN_HEADER + this->dataLen;
 	}
 
-
-//	if(this->type == Frame::TYPE_ACK)
-//	{
-//		eofIndex = Frame::LEN_HEADER;
-//	}
-//	else
-//	{
-//		eofIndex = Frame::LEN_HEADER + this->dataLen;
-//	}
 	pStr[eofIndex] = '\n';
 }
 

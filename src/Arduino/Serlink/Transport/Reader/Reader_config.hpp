@@ -23,12 +23,6 @@
 
 #define READER_CONFIG__READER0_ID 1 // READER0 instance id
 
-//#define READER_CONFIG__READER0_UART_INIT uart_init
-
-//#define READER_CONFIG__READER0_UART_CHECKFRAMERX uart_checkFrameRx
-
-//#define READER_CONFIG__READER0_UART_GETRXLENANDRESET uart_getRxLenAndReset
-
 #endif
 //----------------------------------------------------------
 

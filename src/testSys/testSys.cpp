@@ -119,6 +119,7 @@ void initSys(uint32_t simTicks)
 
 void endRun(){
   simClk->join();
+  debugPrint->writeLine("Test End", DebugPrint_defs::Sys);
   delete simClk;
   delete interruptRunner;
   delete getIntThreadIdInterrupt;

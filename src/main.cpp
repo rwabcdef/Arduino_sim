@@ -20,6 +20,7 @@
 #include "BasicHwTests.hpp"
 #include "SerLinkRxTests.hpp"
 #include "SerLinkTxTests.hpp"
+#include "WriterTests.hpp"
 #include "ButtonTests.hpp"
 
 using namespace std;
@@ -43,7 +44,9 @@ bool runAllTests(int argc, char const *argv[]) {
 
   // Rx of frame: "TST08T0750076ABC07C\n" and subsequent Tx of ack frame
   //bind = []() { SerLinkRxTests::instantHandler1(); }; s.push_back(bind);
-  bind = []() { SerLinkRxTests::stdRx1(); }; s.push_back(bind);
+  //bind = []() { SerLinkRxTests::stdRx1(); }; s.push_back(bind);
+
+  bind = []() { WriterTests::ackTest1(); }; s.push_back(bind);
 
   //bind = []() { SerLinkTxTests::test1(); }; s.push_back(bind);
   //bind = []() { ButtonTests::test1(); }; s.push_back(bind);
@@ -106,7 +109,8 @@ int main(int argc, char const *argv[])
 	  //BasicHwTests::test1();
 	  //SerLinkTxTests::test1();
 	  //SerLinkRxTests::instantHandler1();
-	  SerLinkRxTests::stdRx1();
+	  //SerLinkRxTests::stdRx1();
+	  WriterTests::ackTest1();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
@@ -125,8 +129,8 @@ int main(int argc, char const *argv[])
 
 
 
-	//printf("Main end");
-	debugPrint->writeLine("Main End", DebugPrint_defs::Zero);
+	printf("Main end");
+	//debugPrint->writeLine("Main End", DebugPrint_defs::Zero);
 
 	fflush(stdout);
 

@@ -1,11 +1,11 @@
 /*
- * SerLinkTxTests.cpp
+ * WriterTests.cpp
  *
- *  Created on: 3 Jul 2023
+ *  Created on: 5 Nov 2023
  *      Author: rw123
  */
 
-#include "SerLinkTxTests.hpp"
+#include "WriterTests.hpp"
 #include "env.hpp"
 #include "DebugPrint.hpp"
 #include "Global.hpp"
@@ -16,6 +16,8 @@
 #include "uart_wrapper.hpp"
 #include "Frame.hpp"
 #include "Reader_config.hpp"
+#include "Reader.hpp"
+#include "Writer.hpp"
 #include "DebugUser.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +25,7 @@
 #include <chrono>
 #include <thread>
 
+WriterTests::WriterTests() {}
 //------------------------------------------------
 //#define DEBUG_STR_LEN 256
 static char debugStr[ENV_DEBUG_STR_LEN] = {0};
@@ -66,7 +69,7 @@ static void uartTxRun()
   {
     strcpy(s, "uartTx: endl");
     sprintf(debugStr, "uart Tx frame: %s", uartTxFrame);
-    debugPrint->writeLine(debugStr, DebugPrint_defs::UartTx);
+    //debugPrint->writeLine(debugStr, DebugPrint_defs::UartTx);
     memset(debugStr, 0, ENV_DEBUG_STR_LEN);
     uartTxCharIndex = 0;
   }
@@ -74,7 +77,7 @@ static void uartTxRun()
   {
     sprintf(s, "uartTx: %c", c);
   }
-  //debugPrint->writeLine(s, DebugPrint_defs::UartTx);
+  debugPrint->writeLine(s, DebugPrint_defs::UartTx);
 
   if(g_enable_USART_UDRE_ISR)
   {
@@ -92,35 +95,77 @@ static void Clr_UDRIE0_CallBack()
   debugPrint->writeLine("Clr_UDRIE0_CallBack", DebugPrint_defs::UartTx);
   g_enable_USART_UDRE_ISR = false;
 }
-//------------------------------------------------
+//---------------------------------------------------------------
+static void uartRxHandler(void* pData)
+{
+  uint64_t n = (uint64_t)pData;
+  char c = (char)n;
 
-void SerLinkTxTests::test1()
+  UDR0 = c;    // load ATmega328 Uart data register with the received char
+
+
+  cli();
+  RUN_ISR(UART_ISR_RX); // Run the Uart rx interrupt routine
+  sei();
+
+  static char s[32];
+  memset(s, 0, 32);
+  if(c == '\n')
+  {
+    sprintf(s, "rx: endl", 0);
+  }
+  else
+  {
+    sprintf(s, "rx: %c", c);
+  }
+
+  debugPrint->writeLine(s, DebugPrint_defs::UartRx);
+  sei();
+}
+//---------------------------------------------------------------
+//---------------------------------------------------------------
+// These objects MUST be global to avoid a stack overflow.
+SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID);
+SerLink::Reader reader0(READER_CONFIG__READER0_ID, &writer0);
+InterruptSchedule* pUartRxInterrupt;
+
+void WriterTests::ackTest1()
 {
   char s[256] = {0};
   char uartRxDebugStr[128];
   volatile char rxBuffer[UART_BUFF_LEN];
+  Event uartRx(uartRxHandler);
+  uint16_t startTick;
+  swTimer_tickReset(&startTick);
+  char ackBuffer[32];
+  uint64_t current = 0;
+  bool txFrameSent = false;
+
+  //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
+  static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
+
+  static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, SerLink::Frame::ACK_OK, "");
+
+  //uint8_t retCode;
+  //txFrame.toString(ackBuffer, &retCode);
+
+  initDebug();
+  initRun(50000);
 
   setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
   setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
 
-  uint16_t startTick;
-  swTimer_tickReset(&startTick);
 
-  uint64_t current = 0;
-
-  //InitTimestamp();
-  //initSys(5000);
-
-  initDebug();
-  initRun(20000);
-//  InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);
-//  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+  //ackFrame.toString(ackBuffer, &retCode);
+  //pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer, 20000, 530);
+  //pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST04A615900\n", 20000, 530);
+  //interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
 //  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
 
   debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
   //return 0;
 
-  uart_init((char*) rxBuffer, (uint8_t) UART_BUFF_LEN);
+  //uart_init((char*) rxBuffer, (uint8_t) UART_BUFF_LEN);
 
   sei();
   simClk->start();
@@ -138,8 +183,38 @@ void SerLinkTxTests::test1()
       //printf("intThreadId:  0x%x\n", std::hash<std::thread::id>{}(intThreadId));
       //x = true;
 
-      sprintf(uartTxFrame, "hello\n", 0);
-      uart_write(uartTxFrame);
+      //sprintf(uartTxFrame, "hello\n", 0);
+      //uart_write(uartTxFrame);
+      writer0.sendFrame(txFrame, false);
+      txFrameSent = true;
+
+      uint8_t retCode;
+      ackFrame.toString(ackBuffer, &retCode);
+      pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer,
+      simClk->getCurrent() + 20000, 530);
+      interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+    }
+
+    writer0.run();
+    reader0.run();
+
+
+    if(txFrameSent)
+    {
+      uint8_t status = writer0.getStatus();
+      if(status != SerLink::Writer::STATUS_BUSY){
+        char s[16];
+        writer0.getStatusStr(s);
+        sprintf(debugStr, "writer0 %s\n", s);
+        debugPrint->writeLine(debugStr, DebugPrint_defs::UnitTest0);
+        txFrameSent = false;
+      }
+    }
+
+    if(30000 == current)
+    {
+      //printf("at 30000\n");
+      debugPrint->writeLine("at 30000", DebugPrint_defs::Zero);
     }
 
   }while(!simClk->getDone());

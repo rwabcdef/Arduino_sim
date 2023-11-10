@@ -24,7 +24,7 @@ private:
   uint8_t id;
   uint16_t startTick;
   bool txFlag;
-  bool ackRxFlag;
+  volatile bool ackRxFlag;
   bool txAck;
   char txBuffer[UART_BUFF_LEN];
   char s[64];
@@ -32,6 +32,8 @@ private:
   uint8_t bufferLen;
   Frame txFrame;
   Frame ackRxFrame;
+
+  uint8_t flag;
 
   uint8_t idle();
   uint8_t txWait();
@@ -52,6 +54,8 @@ public:
   uint8_t sendFrame(Frame& frame, bool ack = true);
 
   uint8_t getStatus();
+
+  void getStatusStr(char* str);
 
   // Called by a Reader to pass an ack frame to the Writer.
   void setAckFrame(Frame& frame);

@@ -164,6 +164,9 @@ uint8_t Reader::idle()
 
 		  if(this->writer != nullptr)
 		  {
+		    sprintf(this->s, "reader set ack", 0);
+		    //this->debugWrite(this->s);
+
 		    // Pass received frame onto the associated Writer.
 		    this->writer->setAckFrame(this->rxFrame);
 		  }

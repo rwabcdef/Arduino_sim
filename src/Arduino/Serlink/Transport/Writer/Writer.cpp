@@ -27,6 +27,7 @@ Writer::Writer(uint8_t id): id(id)
   this->debugLevel = DebugPrint_defs::UartRx;
   this->debugOn = true;
   this->status = Writer::STATUS_IDLE;
+  this->flag = 0;
 }
 
 void Writer::run()
@@ -52,11 +53,25 @@ uint8_t Writer::getStatus()
 {
   return this->status;
 }
+
+void Writer::getStatusStr(char* str)
+{
+  switch(this->status)
+  {
+    case STATUS_IDLE: sprintf(str, "idle\0", 0); break;
+    case STATUS_BUSY: sprintf(str, "busy\0", 0); break;
+    case STATUS_OK: sprintf(str, "ok\0", 0); break;
+    case STATUS_TIMEOUT: sprintf(str, "timeout\0", 0); break;
+    case STATUS_PROTOCOL_ERROR: sprintf(str, "protocol error\0", 0); break;
+  }
+}
+
   // Called by a Reader to pass an ack frame to the Writer.
 void Writer::setAckFrame(Frame& frame)
 {
-  this->ackRxFlag = true;
   frame.copy(&this->ackRxFrame);
+  this->ackRxFlag = true;
+  //this->debugWrite("writer ack");
 }
 
 //----------------------------------------------------------------
@@ -87,6 +102,8 @@ uint8_t Writer::txWait()
   }
   else
   {
+    //return IDLE;
+
     if(this->txFrame.type == Frame::TYPE_UNIDIRECTION)
     {
       this->status = Writer::STATUS_IDLE;
@@ -94,6 +111,9 @@ uint8_t Writer::txWait()
     }
     else
     {
+      //sprintf(this->s, "writer ack wait", 0);
+      //this->debugWrite(this->s);
+
       swTimer_tickReset(&this->startTick);
       return RXACKWAIT;
     }
@@ -101,9 +121,12 @@ uint8_t Writer::txWait()
 }
 uint8_t Writer::rxAckWait()
 {
-  if(this->ackRxFlag)
+  if(true == this->ackRxFlag)
   {
     this->ackRxFlag = false;
+
+    //sprintf(this->s, "writer rx ack", 0);
+    //this->debugWrite(this->s);
 
     if(0 == strncmp(this->ackRxFrame.protocol, this->txFrame.protocol, Frame::LEN_PROTOCOL))
     {
@@ -120,6 +143,7 @@ uint8_t Writer::rxAckWait()
   if(swTimer_tickCheckTimeout(&this->startTick, 1000))
   {
     this->status = Writer::STATUS_TIMEOUT;
+    printf("timeout\n");
     return IDLE;
   }
 
