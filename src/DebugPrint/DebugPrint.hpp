@@ -6,10 +6,14 @@
  */
 
 #include "env.hpp"
-#include "TSQueue.hpp"
+
+
 
 #ifndef DEBUGPRINT_HPP_
 #define DEBUGPRINT_HPP_
+
+#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
+#include "TSQueue.hpp"
 
 #define TIMESTAMP_LEN_MAX 64
 
@@ -61,6 +65,6 @@ private:
 	char timestampStr[TIMESTAMP_LEN_MAX];
 };
 
-
+#endif
 
 #endif /* DEBUGPRINT_HPP_ */

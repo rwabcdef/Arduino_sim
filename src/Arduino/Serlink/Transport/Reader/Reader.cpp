@@ -18,7 +18,7 @@
 using namespace SerLink;
 
 
-Reader::Reader(uint8_t id, Writer* writer) : id(id), writer(writer)
+Reader::Reader(uint8_t id, Writer* writer) : id(id), writer(writer), DebugUser()
 {
 	//this->id = id;
 	this->rxFlag = false;
@@ -28,7 +28,6 @@ Reader::Reader(uint8_t id, Writer* writer) : id(id), writer(writer)
 	//this->debugPrinter = debugPrint;
 	this->currentState = IDLE;
 	this->debugLevel = DebugPrint_defs::UartRx;
-	this->debugOn = true;
 
 	for(uint8_t i=0; i<READER_CONFIG__MAX_NUM_INSTANT_HANDLERS; i++)
 	{

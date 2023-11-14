@@ -9,7 +9,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
 #include <chrono>
+#endif
 #include "DebugPrint.hpp"
 
 

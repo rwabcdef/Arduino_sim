@@ -5,15 +5,23 @@
  *      Author: rw123
  */
 
-//#include "DebugPrint.hpp"
 #include "DebugUser.hpp"
+#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
 #include "Global.hpp"
+#endif
+
+DebugUser::DebugUser()
+{
+  this->debugOn = false;
+}
 
 void DebugUser::debugWrite(char* str)
 {
+#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
 	if(this->debugOn)
 	{
 		debugPrint->writeLine(str, this->debugLevel);
 	}
+#endif
 }
 

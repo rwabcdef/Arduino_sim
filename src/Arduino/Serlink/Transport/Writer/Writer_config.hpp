@@ -20,7 +20,7 @@
 
 #include "uart_wrapper.hpp"
 
-#define WRITER_CONFIG__WRITER0_ID 0 // WRITER0 instance id
+#define WRITER_CONFIG__WRITER0_ID 1 // WRITER0 instance id
 
 #endif
 //----------------------------------------------------------

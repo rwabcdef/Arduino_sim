@@ -13,8 +13,11 @@
 #include "Writer.hpp"
 #include "Frame.hpp"
 #include "Transport.hpp"
+
+#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
 #include "DebugPrint.hpp"
 #include "DebugUser.hpp"
+#endif
 
 namespace SerLink
 {

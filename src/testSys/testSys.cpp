@@ -20,6 +20,10 @@
 
 using namespace std::chrono;
 
+static bool timestampUsRealTime = false;
+
+void setUseRealTimeInTimestamp(bool b){ timestampUsRealTime = b; }
+
 uint8_t TESTSYS_mode = TESTSYS_TEST_MODE_NONE;
 
 void getIntThreadId_ISR();
@@ -135,16 +139,19 @@ void endSys()
 
 void MakeTimestamp(char* pTimeStamp)
 {
+  long total, sec, milli;
 
+  if(timestampUsRealTime)
+  {
+    high_resolution_clock::time_point now = high_resolution_clock::now();
+    duration<double> elapsed = now - g_start;
+    milliseconds elapsed_mS = duration_cast<milliseconds>(elapsed);
 
-	high_resolution_clock::time_point now = high_resolution_clock::now();
-	duration<double> elapsed = now - g_start;
-	milliseconds elapsed_mS = duration_cast<milliseconds>(elapsed);
+    total = elapsed_mS.count();
 
-	long total = elapsed_mS.count();
-
-	long sec = (int)(total / 1000);
-	long milli = (total % 1000);
+    sec = (int)(total / 1000);
+    milli = (total % 1000);
+  }
 
 	std::thread::id thisThreadId = std::this_thread::get_id();
 	char* threadLabel;
@@ -172,8 +179,18 @@ void MakeTimestamp(char* pTimeStamp)
 	//sprintf(pTimeStamp, "hello", 0); return;
 
 	//sprintf(pTimeStamp, "(0x%x)%06d:%03d-%03d(%06d)", std::hash<std::thread::id>{}(thisThreadId), total, sec, milli, timer0_tick_ISR);
-	sprintf(pTimeStamp, "(%s)%06d:%03d-%03d(%03d.%03d.%03d)(%06d)",
-			threadLabel, total, sec, milli, sim_S, sim_mS, sim_uS, g_timer0_ISR);
+
+	if(timestampUsRealTime)
+	{
+	  sprintf(pTimeStamp, "(%s)%06d:%03d-%03d(%03d.%03d.%03d)(%06d)",
+	        threadLabel, total, sec, milli, sim_S, sim_mS, sim_uS, g_timer0_ISR);
+	}
+	else
+	{
+	  sprintf(pTimeStamp, "(%s)(%03d.%03d.%03d)(%06d)",
+	            threadLabel, sim_S, sim_mS, sim_uS, g_timer0_ISR);
+	}
+
 
 	//strcpy(pTimeStamp, "123");
 }

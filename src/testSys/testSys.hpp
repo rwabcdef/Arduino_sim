@@ -28,6 +28,8 @@ void endRun();
 
 void endSys();
 
+void setUseRealTimeInTimestamp(bool b);
+
 void MakeTimestamp(char* pTimeStamp);
 
 void timer0_ISR();

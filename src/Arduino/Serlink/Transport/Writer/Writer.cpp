@@ -17,15 +17,14 @@
 
 using namespace SerLink;
 
-Writer::Writer(uint8_t id): id(id)
+Writer::Writer(uint8_t id): id(id), DebugUser()
 {
   this->txFlag = false;
   this->ackRxFlag = false;
   this->txAck = false;
   this->bufferLen = UART_BUFF_LEN;
   this->currentState = IDLE;
-  this->debugLevel = DebugPrint_defs::UartRx;
-  this->debugOn = true;
+  this->debugLevel = DebugPrint_defs::Writer0;
   this->status = Writer::STATUS_IDLE;
   this->flag = 0;
 }
@@ -125,8 +124,8 @@ uint8_t Writer::rxAckWait()
   {
     this->ackRxFlag = false;
 
-    //sprintf(this->s, "writer rx ack", 0);
-    //this->debugWrite(this->s);
+    sprintf(this->s, "writer rx ack", 0);
+    this->debugWrite(this->s);
 
     if(0 == strncmp(this->ackRxFrame.protocol, this->txFrame.protocol, Frame::LEN_PROTOCOL))
     {

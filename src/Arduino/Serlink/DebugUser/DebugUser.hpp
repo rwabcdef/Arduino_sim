@@ -9,7 +9,6 @@
 #define DEBUGUSER_HPP_
 
 #include "env.hpp"
-//#include "DebugPrint.hpp"
 
 class DebugUser
 {
@@ -17,10 +16,9 @@ protected:
 	DebugPrint_defs::Levels debugLevel;
 public:
 	bool debugOn;
+	DebugUser();
 	void debugWrite(char* str);
 
 };
-
-
 
 #endif /* DEBUGUSER_HPP_ */

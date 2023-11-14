@@ -149,6 +149,8 @@ void WriterTests::ackTest1()
   //uint8_t retCode;
   //txFrame.toString(ackBuffer, &retCode);
 
+  writer0.debugOn = true;
+
   initDebug();
   initRun(50000);
 
