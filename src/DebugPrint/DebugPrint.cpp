@@ -5,13 +5,15 @@
  *      Author: rw123
  */
 
+#if defined (ENV_CONFIG__SYSTEM_PC)
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
+
+//#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
 #include <chrono>
-#endif
 #include "DebugPrint.hpp"
 
 
@@ -106,4 +108,4 @@ void DebugPrint::setGetTimestamp(GetTimestamp getTimestamp)
 	this->getTimestamp = getTimestamp;
 }
 
-
+#endif

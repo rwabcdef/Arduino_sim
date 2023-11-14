@@ -12,9 +12,12 @@
 #include "Writer_config.hpp"
 #include "StateMachine.hpp"
 #include "Frame.hpp"
-#include "Transport.hpp"
-#include "DebugPrint.hpp"
 #include "DebugUser.hpp"
+//#include "Transport.hpp"
+#if defined(ENV_CONFIG__SYSTEM_PC)
+#include "DebugPrint.hpp"
+
+#endif
 
 namespace SerLink
 {
@@ -25,8 +28,8 @@ private:
   uint16_t startTick;
   bool txFlag;
   volatile bool ackRxFlag;
-  bool txAck;
-  char txBuffer[UART_BUFF_LEN];
+  //char txBuffer[UART_BUFF_LEN];
+  char* txBuffer;
   char s[64];
   uint8_t status;
   uint8_t bufferLen;
@@ -47,11 +50,11 @@ public:
   static const uint8_t STATUS_TIMEOUT = 51;
   static const uint8_t STATUS_PROTOCOL_ERROR = 52;
 
-  Writer(uint8_t id);
+  Writer(uint8_t id, char* txBuffer, uint8_t bufferLen);
   void run();
 
   // Used to send frame
-  uint8_t sendFrame(Frame& frame, bool ack = true);
+  uint8_t sendFrame(Frame& frame);
 
   uint8_t getStatus();
 

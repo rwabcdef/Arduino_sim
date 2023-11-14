@@ -17,7 +17,7 @@
 #define ENV_CONFIG__DEBUG_LEVELS_OVERRIDE
 namespace DebugPrint_defs{
 static const char* const LevelLabels[] = {"ZERO ", "ONE  ", "MAIN ",
-		"TMR0 ", "DIGIN", "EV0  ", "URX  ", "UTX  ", "RDR0 ", "WTR0 ", "BUTT0", "UTST0", "SYS  "};
+		"TMR0 ", "DIGIN", "EV0  ", "URX  ", "UTX  ", "BUTT0", "UTST0", "SYS  "};
 
 enum Levels
 {
@@ -30,8 +30,6 @@ enum Levels
 	Event0,
 	UartRx,
 	UartTx,
-	Reader0,
-	Writer0,
 	Butt0,
 	UnitTest0,
 	Sys

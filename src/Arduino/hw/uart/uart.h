@@ -1,15 +1,15 @@
 #ifndef UART_H
 #define UART_H
 
-
-//#include <avr/io.h>
-//#include "wiring_private.h"
-
-#define UART_BUFF_LEN 32
-
-
-#include <stdint.h>
+#if defined(ENV_CONFIG__SYSTEM_PC)
+#include <avr/io.h>
+#include "wiring_private.h"
+#endif
 #include "env.h"
+#include<stdint.h>
+
+#define UART_BUFF_LEN 64
+
 //--------------------------------------------------------------------------------
 void uart_init(char* pRxBuffer, uint8_t rxBufferLen);
 //--------------------------------------------------------------------------------

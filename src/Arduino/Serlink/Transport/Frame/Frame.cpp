@@ -66,7 +66,11 @@ void Frame::fromString(char* str, Frame* pFrame)
 	pFrame->type = str[Frame::INDEX_START_TYPE];
 	Frame::str3dToInt(&str[Frame::INDEX_START_ROLLCODE], &pFrame->rollCode);
 	Frame::str3dToInt(&str[Frame::INDEX_START_DATALEN], (uint16_t*)&pFrame->dataLen);
-	strncpy(pFrame->data, &str[Frame::INDEX_START_DATA], pFrame->dataLen);
+
+  if(pFrame->dataLen < Frame::ACK_OK)
+  {
+    strncpy(pFrame->data, &str[Frame::INDEX_START_DATA], pFrame->dataLen);
+  }
 }
 
 void Frame::copy(Frame* copy)
@@ -75,7 +79,11 @@ void Frame::copy(Frame* copy)
 	copy->type = this->type;
 	copy->rollCode = this->rollCode;
 	copy->dataLen = this->dataLen;
-	strncpy(copy->data, this->data, this->dataLen);
+
+  if(this->dataLen < Frame::ACK_OK)
+  {
+    strncpy(copy->data, this->data, this->dataLen);
+  }
 }
 
 void Frame::int3dToStr(const uint16_t value, char* pStr)

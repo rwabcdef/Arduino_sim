@@ -12,7 +12,7 @@
 #ifndef DEBUGPRINT_HPP_
 #define DEBUGPRINT_HPP_
 
-#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
+#if defined (ENV_CONFIG__SYSTEM_PC)
 #include "TSQueue.hpp"
 
 #define TIMESTAMP_LEN_MAX 64

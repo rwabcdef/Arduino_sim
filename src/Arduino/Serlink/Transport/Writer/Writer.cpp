@@ -6,7 +6,9 @@
  */
 
 #include "Writer.hpp"
+#if defined(ENV_CONFIG__SYSTEM_PC)
 #include "ATmega328.hpp"
+#endif
 #include "swTimer.h"
 #include <string.h>
 #include <stdio.h>
@@ -17,14 +19,16 @@
 
 using namespace SerLink;
 
-Writer::Writer(uint8_t id): id(id), DebugUser()
+Writer::Writer(uint8_t id, char* txBuffer, uint8_t bufferLen): id(id), DebugUser()
 {
   this->txFlag = false;
   this->ackRxFlag = false;
-  this->txAck = false;
-  this->bufferLen = UART_BUFF_LEN;
+  this->txBuffer = txBuffer;
+  this->bufferLen = bufferLen;
   this->currentState = IDLE;
+  #if defined (ENV_CONFIG__SYSTEM_PC)
   this->debugLevel = DebugPrint_defs::Writer0;
+  #endif
   this->status = Writer::STATUS_IDLE;
   this->flag = 0;
 }
@@ -40,17 +44,18 @@ void Writer::run()
 }
 
 // Used to send frame (called from app layer above)
-uint8_t Writer::sendFrame(Frame& frame, bool ack)
+uint8_t Writer::sendFrame(Frame& frame)
 {
   this->txFlag = true;
-  this->txAck = ack;
   frame.copy(&this->txFrame);
 }
 
 // Used to check tx status (called from app layer above)
 uint8_t Writer::getStatus()
 {
-  return this->status;
+  uint8_t status = this->status;
+  this->status = Writer::STATUS_IDLE; // clear status
+  return status;
 }
 
 void Writer::getStatusStr(char* str)
@@ -124,8 +129,8 @@ uint8_t Writer::rxAckWait()
   {
     this->ackRxFlag = false;
 
-    sprintf(this->s, "writer rx ack", 0);
-    this->debugWrite(this->s);
+    //sprintf(this->s, "writer rx ack", 0);
+    //this->debugWrite(this->s);
 
     if(0 == strncmp(this->ackRxFrame.protocol, this->txFrame.protocol, Frame::LEN_PROTOCOL))
     {
@@ -139,10 +144,10 @@ uint8_t Writer::rxAckWait()
     }
   }
 
-  if(swTimer_tickCheckTimeout(&this->startTick, 1000))
+  if(swTimer_tickCheckTimeout(&this->startTick, 2000))
   {
     this->status = Writer::STATUS_TIMEOUT;
-    printf("timeout\n");
+    //printf("timeout\n");
     return IDLE;
   }
 

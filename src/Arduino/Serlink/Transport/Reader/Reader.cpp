@@ -6,7 +6,12 @@
  */
 
 #include "Reader.hpp"
+#if defined(ENV_CONFIG__SYSTEM_PC)
 #include "ATmega328.hpp"
+#endif
+//#include <Arduino.h>
+#include <avr/io.h>
+#include "uart.h"
 #include "swTimer.h"
 #include <string.h>
 #include <stdio.h>
@@ -14,20 +19,24 @@
 #define IDLE 0
 #define ACKDELAY 1
 #define TXACKWAIT 2
+#define RXDELAY 3
 
 using namespace SerLink;
 
 
-Reader::Reader(uint8_t id, Writer* writer) : id(id), writer(writer), DebugUser()
+Reader::Reader(uint8_t id, char* rxBuffer, char* ackBuffer, uint8_t bufferLen, Writer* writer) : id(id), writer(writer), DebugUser()
 {
 	//this->id = id;
 	this->rxFlag = false;
-	//this->rxBuffer = rxBuffer;
-	//this->ackBuffer = ackBuffer;
-	this->bufferLen = UART_BUFF_LEN;
+	this->rxBuffer = rxBuffer;
+	this->ackBuffer = ackBuffer;
+  this->bufferLen = bufferLen;
+	//this->bufferLen = UART_BUFF_LEN;
 	//this->debugPrinter = debugPrint;
 	this->currentState = IDLE;
+  #if defined(ENV_CONFIG__SYSTEM_PC)
 	this->debugLevel = DebugPrint_defs::UartRx;
+  #endif
 
 	for(uint8_t i=0; i<READER_CONFIG__MAX_NUM_INSTANT_HANDLERS; i++)
 	{
@@ -36,17 +45,28 @@ Reader::Reader(uint8_t id, Writer* writer) : id(id), writer(writer), DebugUser()
 	}
 	this->numInstantHandlers = 0;
 
-#ifdef READER_CONFIG__READER0
+//#if defined(READER_CONFIG__READER0)
 
-  if(this->id == READER_CONFIG__READER0_ID)
+  //if(this->id == READER_CONFIG__READER0_ID)
   {
     // Initialise uart hardware & driver layer
     uart_init((char*) this->rxBuffer, this->bufferLen);
   }
 
-#endif
-
+//#endif
 }
+
+void Reader::init()
+{
+#if defined(READER_CONFIG__READER0)
+  if(this->id == READER_CONFIG__READER0_ID)
+  {
+    // Initialise uart hardware & driver layer
+    uart_init((char*) this->rxBuffer, this->bufferLen);
+  }
+#endif
+}
+
 void Reader::run()
 {
 	switch(this->currentState)
@@ -54,6 +74,7 @@ void Reader::run()
 		case IDLE: { this->currentState = this->idle(); break;}
 		case ACKDELAY: { this->currentState = this->ackDelay(); break;}
 		case TXACKWAIT: { this->currentState = this->txAckWait(); break;}
+    case RXDELAY: { this->currentState = this->rxDelay(); break;}
 	}
 }
 
@@ -119,7 +140,7 @@ uint8_t Reader::idle()
 		// Read frame from uart.
 		Frame::fromString((char*) this->rxBuffer, &this->rxFrame);
 
-		this->rxFlag = true;
+		//this->rxFlag = true;
 
 		if(this->rxFrame.type == Frame::TYPE_TRANSMISSION)
 		{
@@ -156,6 +177,10 @@ uint8_t Reader::idle()
 		else if(this->rxFrame.type == Frame::TYPE_UNIDIRECTION)
 		{
 		  // Received Frame is unidirectional - so do nothing
+
+      swTimer_tickReset(&this->startTick);
+      sei();
+      return RXDELAY;
 		}
 		else if(this->rxFrame.type == Frame::TYPE_ACK)
     {
@@ -163,7 +188,7 @@ uint8_t Reader::idle()
 
 		  if(this->writer != nullptr)
 		  {
-		    sprintf(this->s, "reader set ack", 0);
+		    //sprintf(this->s, "reader set ack", 0);
 		    //this->debugWrite(this->s);
 
 		    // Pass received frame onto the associated Writer.
@@ -215,9 +240,22 @@ uint8_t Reader::txAckWait()
 	{
 		sprintf(this->s, "Reader::txAckWait() done\n\0", 0);
 		this->debugWrite(this->s);
-		return IDLE;
+
+		swTimer_tickReset(&this->startTick);
+    return RXDELAY;
 	}
 	return TXACKWAIT;
+}
+
+uint8_t Reader::rxDelay()
+{
+  if(swTimer_tickCheckTimeout(&this->startTick, 50))
+  {
+    this->rxFlag = true;
+
+    return IDLE;
+  }
+  return RXDELAY;
 }
 // end of state methods
 //-------------------------------------------------------------

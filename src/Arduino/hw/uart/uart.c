@@ -1,4 +1,5 @@
-#include<stdint.h>
+#include <avr/io.h>
+#include "wiring_private.h"
 #include<stdlib.h>
 #include<string.h>
 #include "uart.h"
@@ -40,9 +41,7 @@ ISR(USART_RX_vect)
   rxBusy = true;
 
   if('\n' == g_rxChar){
-
     g_eof = true;
-
     //cbi(UCSR0B, RXCIE0); // disable uart rx interrupt
 
     g_rxLen = g_rxIndex;
@@ -54,15 +53,9 @@ ISR(USART_RX_vect)
     memset(g_rx, 0, UART_BUFF_LEN); // clear rx buffer
 
     g_rxIndex = 0; // reset rx buffer index
-
-    //printf("uart isr eof\n");
-
-    //g_eof = true;
-  }
+  }  
 }
 //--------------------------------------------------------------------------------
-// Data register empty ISR.
-// Called when the character has been sent from the uart tx pin.
 ISR(USART_UDRE_vect)
 {
   g_txChar = g_tx[g_txIndex];
@@ -96,7 +89,7 @@ void uart_init(char* pRxBuffer, uint8_t rxBufferLen)
   sbi(UCSR0B, RXEN0);
   sbi(UCSR0B, TXEN0);
   sbi(UCSR0B, RXCIE0);
-  cbi(UCSR0B, UDRIE0);
+  cbi(UCSR0B, UDRIE0); 
   //-------------------------------
 
   pRxFramebuffer = pRxBuffer;
@@ -109,13 +102,11 @@ bool uart_checkFrameRx()
   bool b = g_eof;
   g_eof = false;
   return b;
-  //return g_eof;
 }
 //--------------------------------------------------------------------------------
 uint8_t uart_getRxLenAndReset()
 {
   rxBusy = false;
-  g_eof = false;
   return g_rxLen;
 }
 //--------------------------------------------------------------------------------

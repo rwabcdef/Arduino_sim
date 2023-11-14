@@ -12,11 +12,11 @@
 #include "StateMachine.hpp"
 #include "Writer.hpp"
 #include "Frame.hpp"
-#include "Transport.hpp"
-
-#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
-#include "DebugPrint.hpp"
 #include "DebugUser.hpp"
+//#include "Transport.hpp"
+
+#if defined(ENV_CONFIG__SYSTEM_PC)
+#include "DebugPrint.hpp"
 #endif
 
 namespace SerLink
@@ -36,7 +36,6 @@ public:
 	reader_uart_getRxLenAndReset getRxLenAndReset;
 };
 */
-
 class Reader : public StateMachine, public DebugUser
 {
 private:
@@ -52,13 +51,13 @@ private:
 	uint8_t id;
 	bool rxFlag;
 	Writer* writer;
-	// char* rxBuffer;
-	//volatile char* ackBuffer;
+	char* rxBuffer;
+	char* ackBuffer;
 	uint8_t bufferLen;
 	uint16_t startTick;
 	//DebugPrint* debugPrinter;
-	char rxBuffer[UART_BUFF_LEN];
-	char ackBuffer[UART_BUFF_LEN];
+	//char rxBuffer[UART_BUFF_LEN];
+	//char ackBuffer[UART_BUFF_LEN];
 	char s[64];
 	Frame rxFrame;
 	Frame ackFrame;
@@ -68,6 +67,7 @@ private:
 	uint8_t idle();
 	uint8_t ackDelay();
 	uint8_t txAckWait();
+  uint8_t rxDelay();
 
 	//-------------------------------------
 	// Uart Interface
@@ -87,7 +87,8 @@ private:
 	readHandler getInstantHandler(char* protocol);
 
 public:
-	Reader(uint8_t id, Writer* writer = nullptr); // , DebugPrint* debugPrint = nullptr
+	Reader(uint8_t id, char* rxBuffer, char* ackBuffer, uint8_t bufferLen, Writer* writer = nullptr); // , DebugPrint* debugPrint = nullptr
+  void init();
 	void run();
 	bool registerInstantCallback(char* protocol, readHandler handler);
 	bool getRxFrame(Frame& rxFrame);

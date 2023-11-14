@@ -4,10 +4,10 @@
  *  Created on: 30 Apr 2023
  *      Author: rw123
  */
-
 #include "DebugUser.hpp"
-#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
+#if defined(ENV_CONFIG__SYSTEM_PC)
 #include "Global.hpp"
+
 #endif
 
 DebugUser::DebugUser()
@@ -17,7 +17,7 @@ DebugUser::DebugUser()
 
 void DebugUser::debugWrite(char* str)
 {
-#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
+#if defined(ENV_CONFIG__SYSTEM_PC)
 	if(this->debugOn)
 	{
 		debugPrint->writeLine(str, this->debugLevel);
