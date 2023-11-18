@@ -30,6 +30,10 @@ WriterTests::WriterTests() {}
 //#define DEBUG_STR_LEN 256
 static char debugStr[ENV_DEBUG_STR_LEN] = {0};
 
+static char readerRxBuffer[UART_BUFF_LEN];
+static char readerAckBuffer[UART_BUFF_LEN];
+static char writerTxBuffer[UART_BUFF_LEN];
+
 static char uartTxFrame[128] = {0};
 static uint8_t uartTxCharIndex = 0;
 static void Set_UDRIE0_CallBack();
@@ -125,8 +129,8 @@ static void uartRxHandler(void* pData)
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 // These objects MUST be global to avoid a stack overflow.
-SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID);
-SerLink::Reader reader0(READER_CONFIG__READER0_ID, &writer0);
+SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer, UART_BUFF_LEN);
+SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN, &writer0);
 InterruptSchedule* pUartRxInterrupt;
 
 void WriterTests::ackTest1()
@@ -187,7 +191,7 @@ void WriterTests::ackTest1()
 
       //sprintf(uartTxFrame, "hello\n", 0);
       //uart_write(uartTxFrame);
-      writer0.sendFrame(txFrame, false);
+      writer0.sendFrame(txFrame);
       txFrameSent = true;
 
       uint8_t retCode;
@@ -200,14 +204,14 @@ void WriterTests::ackTest1()
     writer0.run();
     reader0.run();
 
-
     if(txFrameSent)
     {
       uint8_t status = writer0.getStatus();
-      if(status != SerLink::Writer::STATUS_BUSY){
+      if(status == SerLink::Writer::STATUS_OK){
         char s[16];
         writer0.getStatusStr(s);
         sprintf(debugStr, "writer0 %s\n", s);
+        //printf("%s\n", debugStr);
         debugPrint->writeLine(debugStr, DebugPrint_defs::UnitTest0);
         txFrameSent = false;
       }

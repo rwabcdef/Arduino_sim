@@ -7,7 +7,7 @@
 #include "DebugUser.hpp"
 #if defined(ENV_CONFIG__SYSTEM_PC)
 #include "Global.hpp"
-
+#include "DebugPrint.hpp"
 #endif
 
 DebugUser::DebugUser()

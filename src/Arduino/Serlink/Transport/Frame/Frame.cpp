@@ -31,6 +31,11 @@ Frame::Frame(char* pProtocol, char type, uint16_t rollCode, uint16_t dataLen, ch
 	strncpy(this->data, pData, this->dataLen);
 }
 
+void Frame::setProtocol(char* pProtocol)
+{
+  strncpy(this->protocol, pProtocol, Frame::LEN_PROTOCOL);
+}
+
 void Frame::toString(char* const pStr, uint8_t* pRetCode)
 {
   uint16_t eofIndex;

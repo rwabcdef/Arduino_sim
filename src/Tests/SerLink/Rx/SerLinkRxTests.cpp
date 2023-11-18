@@ -24,6 +24,10 @@
 #include <chrono>
 #include <thread>
 
+char rxBuffer[UART_BUFF_LEN];
+char readerRxBuffer[UART_BUFF_LEN];
+char readerAckBuffer[UART_BUFF_LEN];
+
 void uartRxHandler(void* pData);
 
 SerLinkRxTests::SerLinkRxTests(){}
@@ -122,9 +126,6 @@ void SerLinkRxTests::test1()
 {
   char s[256] = {0};
   Event uartRx(uartRxHandler);
-  volatile char rxBuffer[UART_BUFF_LEN];
-  volatile char readerRxBuffer[UART_BUFF_LEN];
-  volatile char readerAckBuffer[UART_BUFF_LEN];
   char uartRxDebugStr[128];
 
   uint16_t startTick;
@@ -138,7 +139,7 @@ void SerLinkRxTests::test1()
   initRun(20000);
   InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);
   interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
-  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
+  SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
 
   debugPrint->writeLine("pA", DebugPrint_defs::Zero);
   //return 0;
@@ -195,9 +196,6 @@ void SerLinkRxTests::instantHandler1()
 {
   char s[256] = {0};
   Event uartRx(uartRxHandler);
-  volatile char rxBuffer[UART_BUFF_LEN];
-  volatile char readerRxBuffer[UART_BUFF_LEN];
-  volatile char readerAckBuffer[UART_BUFF_LEN];
   char uartRxDebugStr[128];
 
   uint16_t startTick;
@@ -211,7 +209,7 @@ void SerLinkRxTests::instantHandler1()
   initDebug();
   //initSys(5000);
   //SerLink::Reader *reader0 = new SerLink::Reader(READER_CONFIG__READER0_ID);
-  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
+  SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
 
   reader0.registerInstantCallback("TST08", testReadHandler);
 
@@ -281,9 +279,6 @@ void SerLinkRxTests::stdRx1()
 {
   char s[256] = {0};
   Event uartRx(uartRxHandler);
-  volatile char rxBuffer[UART_BUFF_LEN];
-  volatile char readerRxBuffer[UART_BUFF_LEN];
-  volatile char readerAckBuffer[UART_BUFF_LEN];
   char uartRxDebugStr[128];
   SerLink::Frame rxFrame;
   uint16_t startTick;
@@ -297,7 +292,7 @@ void SerLinkRxTests::stdRx1()
   initDebug();
   //initSys(5000);
   //SerLink::Reader *reader0 = new SerLink::Reader(READER_CONFIG__READER0_ID);
-  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
+  SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
 
   initRun(50000);
   InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);

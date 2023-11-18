@@ -9,8 +9,10 @@
 #if defined(ENV_CONFIG__SYSTEM_PC)
 #include "ATmega328.hpp"
 #endif
-//#include <Arduino.h>
+#if defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO)
 #include <avr/io.h>
+#include "wiring_private.h"
+#endif
 #include "uart.h"
 #include "swTimer.h"
 #include <string.h>

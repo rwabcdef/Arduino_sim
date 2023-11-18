@@ -1,8 +1,11 @@
-#include <avr/io.h>
-#include "wiring_private.h"
+#include "uart.h"
+#if defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO)
+//#include <avr/io.h>
+//#include "wiring_private.h"
+#endif
 #include<stdlib.h>
 #include<string.h>
-#include "uart.h"
+
 
 static volatile char g_rx[UART_BUFF_LEN];
 static volatile char g_rxChar = 0;

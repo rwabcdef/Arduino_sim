@@ -9,6 +9,7 @@
 #define ATMEGA328_HPP_
 
 #include<stdint.h>
+#include<stdbool.h>
 
 extern uint8_t UDR0;
 extern uint8_t UCSR0A;

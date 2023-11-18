@@ -5,7 +5,8 @@
  *      Author: rw123
  */
 
-#if defined (ENV_CONFIG__SYSTEM_PC)
+#include "DebugPrint.hpp"
+#if defined(ENV_CONFIG__SYSTEM_PC)
 
 #include <stdio.h>
 #include <stdint.h>
@@ -14,10 +15,6 @@
 
 //#if(ENV_CONFIG__SYSTEM == ENV_CONFIG__SYSTEM_PC)
 #include <chrono>
-#include "DebugPrint.hpp"
-
-
-
 
 //DebugPrint debugPrint(&MakeTimestamp);
 

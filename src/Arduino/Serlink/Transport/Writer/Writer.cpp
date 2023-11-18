@@ -48,6 +48,7 @@ uint8_t Writer::sendFrame(Frame& frame)
 {
   this->txFlag = true;
   frame.copy(&this->txFrame);
+  return 0;
 }
 
 // Used to check tx status (called from app layer above)
@@ -129,8 +130,8 @@ uint8_t Writer::rxAckWait()
   {
     this->ackRxFlag = false;
 
-    //sprintf(this->s, "writer rx ack", 0);
-    //this->debugWrite(this->s);
+    sprintf(this->s, "writer rx ack", 0);
+    this->debugWrite(this->s);
 
     if(0 == strncmp(this->ackRxFrame.protocol, this->txFrame.protocol, Frame::LEN_PROTOCOL))
     {

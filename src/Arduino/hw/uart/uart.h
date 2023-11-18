@@ -2,8 +2,8 @@
 #define UART_H
 
 #if defined(ENV_CONFIG__SYSTEM_PC)
-#include <avr/io.h>
-#include "wiring_private.h"
+//#include <avr/io.h>
+//#include "wiring_private.h"
 #endif
 #include "env.h"
 #include<stdint.h>

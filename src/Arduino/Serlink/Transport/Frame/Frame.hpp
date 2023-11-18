@@ -30,23 +30,24 @@ public:
   static const int INDEX_START_DATA = INDEX_START_DATALEN + LEN_DATALEN;
   static const int MAX_DATALEN = 64;
 
-    // DataLen (Ack code) return codes
-    static const int ACK_OK = 900;
+  // DataLen (Ack code) return codes
+  static const int ACK_OK = 900;
 
-    char protocol[LEN_PROTOCOL];
+  char protocol[LEN_PROTOCOL];
 	char type;
 	uint16_t rollCode;
 	uint16_t dataLen;
 	char data[MAX_DATALEN];
 
-    Frame();
-    Frame(char* pProtocol, char type, uint16_t rollCode, uint16_t dataLen, char* pData);
-    void toString(char* const pStr, uint8_t* pRetCode);
-    void copy(Frame* copy);
-    void toDebugString(char* pStr);
-    static void fromString(char* str, Frame* pFrame);
-    static void int3dToStr(const uint16_t rollCode, char* pStr);
-    static void str3dToInt(char* str, uint16_t* value);
+  Frame();
+  Frame(char* pProtocol, char type, uint16_t rollCode, uint16_t dataLen, char* pData);
+  void setProtocol(char* pProtocol);
+  void toString(char* const pStr, uint8_t* pRetCode);
+  void copy(Frame* copy);
+  void toDebugString(char* pStr);
+  static void fromString(char* str, Frame* pFrame);
+  static void int3dToStr(const uint16_t rollCode, char* pStr);
+  static void str3dToInt(char* str, uint16_t* value);
 
 private:
 

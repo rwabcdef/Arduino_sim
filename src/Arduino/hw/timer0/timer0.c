@@ -1,6 +1,4 @@
 #include<stdint.h>
-//#include <avr/io.h>
-//#include "wiring_private.h"
 #include"timer0.h"
 
 volatile uint16_t g_timer0_ISR = 0;
