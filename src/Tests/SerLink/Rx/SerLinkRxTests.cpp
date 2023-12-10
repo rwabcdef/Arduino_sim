@@ -110,7 +110,7 @@ static void Clr_UDRIE0_CallBack()
 }
 
 // Instant rx handler (i.e. payload goes into ack frame of reader)
-static void testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* data)
+static bool testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* data)
 {
   uint8_t pRetCode;
   rxFrame.toString(debugStr, &pRetCode);
@@ -119,6 +119,8 @@ static void testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* da
   sprintf(data, "Echo: ");
   strncpy(&data[6], rxFrame.data, (long) rxFrame.dataLen);
   *dataLen = rxFrame.dataLen + 6;
+
+  return true;
 }
 //------------------------------------------------
 

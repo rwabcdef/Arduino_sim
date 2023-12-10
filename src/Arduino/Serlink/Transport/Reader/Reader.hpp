@@ -21,7 +21,7 @@
 
 namespace SerLink
 {
-typedef void (*readHandler)(Frame &rxFrame, uint16_t* dataLen, char* data);
+typedef bool (*readHandler)(Frame &rxFrame, uint16_t* dataLen, char* data);
 //typedef void (*readHandler)(const TransportData* pRxData, TransportData* pAckData);
 /*
 typedef void (*reader_uart_init)(char* pRxBuffer, uint8_t rxBufferLen);

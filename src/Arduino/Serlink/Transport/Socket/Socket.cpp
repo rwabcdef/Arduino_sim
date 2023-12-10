@@ -8,14 +8,19 @@
 #include "Socket.hpp"
 #include "string.h"
 
-SerLink::Socket::Socket(Writer* writer, Reader* reader)
-: writer(writer), reader(reader)
+//SerLink::Socket::Socket(Writer* writer, Reader* reader): writer(writer), reader(reader)
+SerLink::Socket::Socket()
 {
-
+  this->active = false;
 }
 
 void SerLink::Socket::init(char* protocol, readHandler instantReadHandler, uint16_t startRollCode)
 {
+  this->active = true;
+  this->txFlag = false;
+  this->rxFlag = false;
+  //this->txBusy = false;
+  this->txStatus = TX_STATUS_IDLE;
   strncpy(this->protocol, protocol, Frame::LEN_PROTOCOL);
   this->instantReadHandler = instantReadHandler;
   this->txRollCode = startRollCode;
@@ -23,8 +28,9 @@ void SerLink::Socket::init(char* protocol, readHandler instantReadHandler, uint1
 
 bool SerLink::Socket::getRxData(char* data, uint8_t* dataLen)
 {
-  if(this->reader->getRxFrame(this->rxFrame))
+  if(this->rxFlag)
   {
+    this->rxFlag = false;
     *dataLen = this->rxFrame.dataLen;
     strncpy(data, this->rxFrame.data, this->rxFrame.dataLen);
     return true;
@@ -32,27 +38,83 @@ bool SerLink::Socket::getRxData(char* data, uint8_t* dataLen)
   return false;
 }
 
-uint8_t SerLink::Socket::sendData(char* data, uint16_t dataLen, bool ack)
+bool SerLink::Socket::sendData(char* data, uint16_t dataLen, bool ack)
 {
-  this->txFrame.setProtocol(this->protocol);
-  if(ack)
+  if(this->txFlag)
   {
-    this->txFrame.type = Frame::TYPE_TRANSMISSION;
+    // Tx is already in progress
+    return false;
   }
   else
   {
-    this->txFrame.type = Frame::TYPE_UNIDIRECTION;
+    this->txFlag = true;
+    this->txStatus = TX_STATUS_BUSY;
+
+    this->txFrame.setProtocol(this->protocol);
+    if(ack)
+    {
+      this->txFrame.type = Frame::TYPE_TRANSMISSION;
+    }
+    else
+    {
+      this->txFrame.type = Frame::TYPE_UNIDIRECTION;
+    }
+    this->txFrame.rollCode = this->txRollCode;
+    Frame::incRollCode(&this->txRollCode);
+    this->txFrame.dataLen = dataLen;
+    strncpy(this->txFrame.data, data, dataLen);
+
+    return true;
   }
-  this->txFrame.rollCode = this->txRollCode;
-  this->txFrame.dataLen = dataLen;
-  strncpy(this->txFrame.data, data, dataLen);
-
-  uint8_t status = this->writer->sendFrame(this->txFrame);
-  return status;
 }
 
-uint8_t SerLink::Socket::getSendStatus()
+uint8_t SerLink::Socket::getAndClearSendStatus()
 {
-  uint8_t status = this->writer->getStatus();
-  return status;
+  if(this->txStatus == TX_STATUS_BUSY)
+  {
+    return this->txStatus;
+  }
+  else
+  {
+    uint8_t status = this->txStatus;
+    this->txStatus = TX_STATUS_IDLE;
+    return status;
+  }
 }
+
+//------------------------------------------------------------------------------
+
+bool SerLink::Socket::getTxFrame(Frame& txFrame)
+{
+  if(this->txFlag)
+  {
+    this->txFrame.copy(&txFrame);
+    this->txFlag = false;
+    //this->txBusy = true;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+void SerLink::Socket::setWriterDoneStatus(uint8_t status)
+{
+  if(status == Writer::STATUS_IDLE)
+  {
+    this->txStatus = TX_STATUS_IDLE;
+  }
+  else if(status >= Writer::STATUS_OK)
+  {
+    // Writer has finished sending Frame
+    this->txStatus = status;
+  }
+}
+
+void SerLink::Socket::setRxFrame(Frame& rxFrame)
+{
+  this->rxFlag = true;
+  rxFrame.copy(&this->rxFrame);
+}
+//------------------------------------------------------------------------------

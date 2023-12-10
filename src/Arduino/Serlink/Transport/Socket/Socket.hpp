@@ -21,23 +21,46 @@ namespace SerLink
 class Socket : public StateMachine, public DebugUser
 {
 private:
-  Writer* writer;
-  Reader* reader;
+  //Writer* writer;
+  //Reader* reader;
+  bool active;
+  bool txFlag;
+  //bool txBusy;
+  bool rxFlag;
+  uint8_t txStatus;
   readHandler instantReadHandler;
   Frame rxFrame, txFrame;
   char protocol[Frame::LEN_PROTOCOL];
   uint16_t txRollCode;
 
 public:
-  Socket(Writer* writer, Reader* reader);
+  const uint8_t TX_STATUS_IDLE = 5;
+  const uint8_t TX_STATUS_BUSY = 6;
+
+  //Socket(Writer* writer, Reader* reader);
+  Socket();
   void init(char* protocol, readHandler instantReadHandler = nullptr, uint16_t startRollCode = 0);
 
   //-------------------------------------------
   // Upper (i.e. application) Interface
 
   bool getRxData(char* data, uint8_t* dataLen);
-  uint8_t sendData(char* data, uint16_t dataLen, bool ack);
-  uint8_t getSendStatus();
+
+  bool sendData(char* data, uint16_t dataLen, bool ack);
+
+  uint8_t getAndClearSendStatus();
+
+  //-------------------------------------------
+  // Lower (i.e. transport) Interface
+
+  // Called by transport layer, to see if there is a frame to be sent from this Socket.
+  bool getTxFrame(Frame& txFrame);
+
+  // Called by transport layer when writer has finished sending frame
+  void setWriterDoneStatus(uint8_t status);
+
+  // Called by transport layer when reader has a frame for this Socket.
+  void setRxFrame(Frame& rxFrame);
   //-------------------------------------------
 };
 

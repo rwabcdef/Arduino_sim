@@ -45,6 +45,7 @@ public:
   void toString(char* const pStr, uint8_t* pRetCode);
   void copy(Frame* copy);
   void toDebugString(char* pStr);
+  static void incRollCode(uint16_t* rollCode);
   static void fromString(char* str, Frame* pFrame);
   static void int3dToStr(const uint16_t rollCode, char* pStr);
   static void str3dToInt(char* str, uint16_t* value);

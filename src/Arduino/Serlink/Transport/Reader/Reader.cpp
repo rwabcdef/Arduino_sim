@@ -161,7 +161,19 @@ uint8_t Reader::idle()
 			  // An instant (i.e. piggyback) handler has been found for this protocol,
 			  // so call it now.
 			  // The instant handler callback sets the ackFrame's data & dataLen.
-			  instantHandler(this->rxFrame, &this->ackFrame.dataLen, this->ackFrame.data);
+			  bool useReturn = instantHandler(this->rxFrame, &this->ackFrame.dataLen, this->ackFrame.data);
+
+			  if(!useReturn)
+			  {
+			    // do not use data length and data in ack frame that was set by the instantHandler
+			    this->ackFrame.type = Frame::TYPE_ACK;
+          this->ackFrame.dataLen = Frame::ACK_OK;
+          memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
+			  }
+			  else
+			  {
+			    // do nothing - use data length and data in ack frame that was set by the instantHandler
+			  }
 			}
 
 			swTimer_tickReset(&this->startTick);

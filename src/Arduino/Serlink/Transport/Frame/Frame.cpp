@@ -91,6 +91,21 @@ void Frame::copy(Frame* copy)
   }
 }
 
+void Frame::incRollCode(uint16_t* rollCode)
+{
+  uint8_t maxValue = 5;
+  if(Frame::LEN_ROLLCODE == 1) { maxValue = 9; }
+  else if(Frame::LEN_ROLLCODE == 2) { maxValue = 99; }
+  else { maxValue = 999; }
+
+  if(*rollCode >= maxValue)
+  {
+    *rollCode = 0;
+  }
+
+  (*rollCode)++;
+}
+
 void Frame::int3dToStr(const uint16_t value, char* pStr)
 {
   uint16_t hundreds = value / 100;
