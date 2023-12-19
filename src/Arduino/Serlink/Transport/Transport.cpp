@@ -88,6 +88,8 @@ uint8_t Transport::idle()
 {
   uint8_t i;
 
+  this->commonBehaviour();
+
   for(i=0; i<this->socketCount; i++)
   {
     if(this->socket[i].getActive())
@@ -104,6 +106,8 @@ uint8_t Transport::idle()
 
 uint8_t Transport::txWait()
 {
+  this->commonBehaviour();
+
   uint8_t status = this->writer->getStatus();
   if(status == SerLink::Writer::STATUS_BUSY)
   {
@@ -118,10 +122,13 @@ uint8_t Transport::txWait()
 
 uint8_t Transport::postTxWait()
 {
+  this->commonBehaviour();
+
   if(swTimer_tickCheckTimeout(&this->startTick, 100))
   {
     return IDLE;
   }
   return POST_TXWAIT;
 }
-
+// end of state methods
+//----------------------------------------------------------------
