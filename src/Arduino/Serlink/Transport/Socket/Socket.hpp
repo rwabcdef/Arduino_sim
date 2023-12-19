@@ -18,7 +18,7 @@
 namespace SerLink
 {
 
-class Socket : public StateMachine, public DebugUser
+class Socket : public DebugUser
 {
 private:
   //Writer* writer;
@@ -39,19 +39,27 @@ public:
 
   //Socket(Writer* writer, Reader* reader);
   Socket();
+  bool getActive(){ return this->active; };
   void init(char* protocol, readHandler instantReadHandler = nullptr, uint16_t startRollCode = 0);
 
   //-------------------------------------------
   // Upper (i.e. application) Interface
 
+  // Gets received data from the socket (sent by the remote device).
+  // Returns true if received data is ready to be read from the socket.
   bool getRxData(char* data, uint8_t* dataLen);
 
+  // Sends data from the socket to the remote device.
+  // Returns true if the data has been accepted.
   bool sendData(char* data, uint16_t dataLen, bool ack);
 
+  // Returns the send status, and clears it.
   uint8_t getAndClearSendStatus();
 
   //-------------------------------------------
   // Lower (i.e. transport) Interface
+
+  char* getProtocol(){ return &this->protocol[0]; };
 
   // Called by transport layer, to see if there is a frame to be sent from this Socket.
   bool getTxFrame(Frame& txFrame);

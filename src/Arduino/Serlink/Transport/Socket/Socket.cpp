@@ -6,6 +6,7 @@
  */
 
 #include "Socket.hpp"
+#include "swTimer.h"
 #include "string.h"
 
 //SerLink::Socket::Socket(Writer* writer, Reader* reader): writer(writer), reader(reader)
@@ -26,6 +27,9 @@ void SerLink::Socket::init(char* protocol, readHandler instantReadHandler, uint1
   this->txRollCode = startRollCode;
 }
 
+//------------------------------------------------------------------------------
+// Upper (i.e. application) Interface
+
 bool SerLink::Socket::getRxData(char* data, uint8_t* dataLen)
 {
   if(this->rxFlag)
@@ -40,13 +44,19 @@ bool SerLink::Socket::getRxData(char* data, uint8_t* dataLen)
 
 bool SerLink::Socket::sendData(char* data, uint16_t dataLen, bool ack)
 {
-  if(this->txFlag)
+  if(!this->active)
+  {
+    return false;
+  }
+
+  if(this->txStatus != TX_STATUS_IDLE)
   {
     // Tx is already in progress
     return false;
   }
   else
   {
+    // No Tx is currently in progress.
     this->txFlag = true;
     this->txStatus = TX_STATUS_BUSY;
 
@@ -77,12 +87,13 @@ uint8_t SerLink::Socket::getAndClearSendStatus()
   else
   {
     uint8_t status = this->txStatus;
-    this->txStatus = TX_STATUS_IDLE;
+    this->txStatus = TX_STATUS_IDLE; // clear status
     return status;
   }
 }
 
 //------------------------------------------------------------------------------
+// Lower (i.e. transport) Interface
 
 bool SerLink::Socket::getTxFrame(Frame& txFrame)
 {
@@ -114,6 +125,11 @@ void SerLink::Socket::setWriterDoneStatus(uint8_t status)
 
 void SerLink::Socket::setRxFrame(Frame& rxFrame)
 {
+  if(!this->active)
+  {
+    return;
+  }
+
   this->rxFlag = true;
   rxFrame.copy(&this->rxFrame);
 }

@@ -1,11 +1,12 @@
 /*
- * WriterTests.cpp
+ * SocketTests.cpp
  *
- *  Created on: 5 Nov 2023
+ *  Created on: 19 Dec 2023
  *      Author: rw123
  */
 
-#include "WriterTests.hpp"
+
+#include "SocketTests.hpp"
 #include "env.hpp"
 #include "DebugPrint.hpp"
 #include "Global.hpp"
@@ -20,12 +21,12 @@
 #include "Writer.hpp"
 #include "DebugUser.hpp"
 #include <stdio.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <chrono>
 #include <thread>
 
-WriterTests::WriterTests() {}
 //------------------------------------------------
 //#define DEBUG_STR_LEN 256
 static char debugStr[ENV_DEBUG_STR_LEN] = {0};
@@ -126,6 +127,7 @@ static void uartRxHandler(void* pData)
   debugPrint->writeLine(s, DebugPrint_defs::UartRx);
   sei();
 }
+
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 // These objects MUST be global to avoid a stack overflow.
@@ -133,7 +135,7 @@ static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer, UART_B
 static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN, &writer0);
 static InterruptSchedule* pUartRxInterrupt;
 
-void WriterTests::ackTest1()
+void SocketTests::RxThenAck1()
 {
   char s[256] = {0};
   char uartRxDebugStr[128];

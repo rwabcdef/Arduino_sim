@@ -52,7 +52,7 @@ Reader::Reader(uint8_t id, char* rxBuffer, char* ackBuffer, uint8_t bufferLen, W
   //if(this->id == READER_CONFIG__READER0_ID)
   {
     // Initialise uart hardware & driver layer
-    uart_init((char*) this->rxBuffer, this->bufferLen);
+    //uart_init((char*) this->rxBuffer, this->bufferLen);
   }
 
 //#endif

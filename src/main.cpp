@@ -21,6 +21,7 @@
 #include "SerLinkRxTests.hpp"
 #include "SerLinkTxTests.hpp"
 #include "WriterTests.hpp"
+#include "SocketTests.hpp"
 #include "ButtonTests.hpp"
 
 using namespace std;
@@ -108,9 +109,10 @@ int main(int argc, char const *argv[])
 	if(TESTSYS_mode == TESTSYS_TEST_MODE_NONE){
 	  //BasicHwTests::test1();
 	  //SerLinkTxTests::test1();
-	  SerLinkRxTests::instantHandler1();
+	  //SerLinkRxTests::instantHandler1();
 	  //SerLinkRxTests::stdRx1();
 	  //WriterTests::ackTest1();
+	  SocketTests::RxThenAck1();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
