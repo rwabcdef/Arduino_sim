@@ -64,7 +64,7 @@ void run1(){ BasicHwTests::test1(); }
 
 int main(int argc, char const *argv[])
 {
-	printf("Main Start 1\n");
+	printf("Main Start 2\n");
 
 	//initDebug();
 //	initRun(5000);
@@ -112,7 +112,7 @@ int main(int argc, char const *argv[])
 	  //SerLinkRxTests::instantHandler1();
 	  //SerLinkRxTests::stdRx1();
 	  //WriterTests::ackTest1();
-	  SocketTests::RxThenAck1();
+	  SocketTests::TxThenAck1();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
@@ -127,9 +127,6 @@ int main(int argc, char const *argv[])
       printf("failed\n");
     }
 	}
-
-
-
 
 	printf("Main end");
 	//debugPrint->writeLine("Main End", DebugPrint_defs::Zero);

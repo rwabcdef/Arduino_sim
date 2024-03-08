@@ -13,7 +13,7 @@ class SocketTests
 {
 public:
   SocketTests(){};
-  static void RxThenAck1();
+  static void TxThenAck1();
 };
 
 

@@ -135,7 +135,7 @@ static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer, UART_B
 static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN, &writer0);
 static InterruptSchedule* pUartRxInterrupt;
 
-void SocketTests::RxThenAck1()
+void SocketTests::TxThenAck1()
 {
   char s[256] = {0};
   char uartRxDebugStr[128];
@@ -148,8 +148,11 @@ void SocketTests::RxThenAck1()
   bool txFrameSent = false;
 
   //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
-  static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
 
+  // Frame that is initially sent
+  static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 6, "hello1");
+
+  // Ack frame that is received (i.e. from simulated remote device).
   static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, SerLink::Frame::ACK_OK, "");
 
   //uint8_t retCode;
@@ -194,9 +197,10 @@ void SocketTests::RxThenAck1()
 
       //sprintf(uartTxFrame, "hello\n", 0);
       //uart_write(uartTxFrame);
-      writer0.sendFrame(txFrame);
+      writer0.sendFrame(txFrame);                // start send of tx frame
       txFrameSent = true;
 
+      // Set up ack frame to be received
       uint8_t retCode;
       ackFrame.toString(ackBuffer, &retCode);
       pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer,
