@@ -135,6 +135,7 @@ static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer, UART_B
 static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN, &writer0);
 static InterruptSchedule* pUartRxInterrupt;
 
+// Transmit a frame and then receive the ack
 void SocketTests::TxThenAck1()
 {
   char s[256] = {0};
@@ -206,6 +207,121 @@ void SocketTests::TxThenAck1()
       pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer,
       simClk->getCurrent() + 20000, 530);
       interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+    }
+
+    writer0.run();
+    reader0.run();
+
+    if(txFrameSent)
+    {
+      uint8_t status = writer0.getStatus();
+      if(status == SerLink::Writer::STATUS_OK){
+        char s[16];
+        writer0.getStatusStr(s);
+        sprintf(debugStr, "writer0 %s\n", s);
+        //printf("%s\n", debugStr);
+        debugPrint->writeLine(debugStr, DebugPrint_defs::UnitTest0);
+        txFrameSent = false;
+      }
+    }
+
+    if(30000 == current)
+    {
+      //printf("at 30000\n");
+      debugPrint->writeLine("at 30000", DebugPrint_defs::Zero);
+    }
+
+  }while(!simClk->getDone());
+
+  //simClk->join(); // Wait for simClk thread to completely terminate
+  //endSys();
+  endRun();
+
+
+  //ASSERT_EQUALM("x should be 5", 5, current);
+
+  if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT)
+  {
+    ASSERT(current == 20000);
+    ASSERT_EQUAL(20000, current);
+    ASSERT_EQUAL(20, swTimer_tickElapsed(startTick));
+  }
+}
+
+//---------------------------------------------------------------
+// Rx of frame then std ack
+void SocketTests::RxThenStdAck()
+{
+  char s[256] = {0};
+  char uartRxDebugStr[128];
+  volatile char rxBuffer[UART_BUFF_LEN];
+  Event uartRx(uartRxHandler);
+  uint16_t startTick;
+  swTimer_tickReset(&startTick);
+  char ackxBuffer[32];
+  uint64_t current = 0;
+  bool txFrameSent = false;
+  uint8_t retCode;
+
+  //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
+
+  // Frame that is initially sent
+  static SerLink::Frame rxFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
+
+  // Ack frame that is received (i.e. from simulated remote device).
+  static SerLink::Frame txAckFrame("TST04", SerLink::Frame::TYPE_ACK, 615, SerLink::Frame::ACK_OK, "");
+
+  //uint8_t retCode;
+  //txFrame.toString(ackBuffer, &retCode);
+
+  writer0.debugOn = true;
+  reader0.init();  // Initialises uart hardware & buffers
+
+  initDebug();
+  initRun(50000);
+
+  setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
+  setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
+
+
+  rxFrame.toString((char*) rxBuffer, &retCode);
+  pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, (const char*)rxBuffer, 6000, 530);
+  //pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST04A615900\n", 20000, 530);
+  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+//  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
+
+  debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
+  //return 0;
+
+  //uart_init((char*) rxBuffer, (uint8_t) UART_BUFF_LEN);
+
+  sei();
+  simClk->start();
+
+  do
+  {
+    current = simClk->getCurrent();
+    if(4000 == current)
+    //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
+    {
+      debugPrint->writeLine("pA", DebugPrint_defs::Zero);
+      //printf("pB");
+
+      //printf("mainThreadId: 0x%x\n", std::hash<std::thread::id>{}(mainThreadId));
+      //printf("intThreadId:  0x%x\n", std::hash<std::thread::id>{}(intThreadId));
+      //x = true;
+
+      //sprintf(uartTxFrame, "hello\n", 0);
+      //uart_write(uartTxFrame);
+      //writer0.sendFrame(txFrame);                // start send of tx frame
+      //txFrameSent = true;
+
+      // Set up ack frame to be received
+      //uint8_t retCode;
+      //ackFrame.toString(ackBuffer, &retCode);
+      //pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer,
+      //simClk->getCurrent() + 20000, 530);
+      //interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
     }
 
     writer0.run();

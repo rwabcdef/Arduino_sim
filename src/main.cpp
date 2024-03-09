@@ -112,7 +112,8 @@ int main(int argc, char const *argv[])
 	  //SerLinkRxTests::instantHandler1();
 	  //SerLinkRxTests::stdRx1();
 	  //WriterTests::ackTest1();
-	  SocketTests::TxThenAck1();
+	  //SocketTests::TxThenAck1();
+	  SocketTests::RxThenStdAck();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
