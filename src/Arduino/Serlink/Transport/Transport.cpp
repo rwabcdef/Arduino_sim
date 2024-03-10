@@ -21,13 +21,25 @@ reader(reader), writer(writer)
   this->socketCount = 0;
   this->currentState = IDLE;
 }
-bool Transport::acquireSocket(Socket* socket)
+bool Transport::acquireSocket(Socket* socket, char* protocol,
+    readHandler instantReadHandler, uint16_t startRollCode)
 {
   if(this->socketCount < (TRANSPORT_CONFIG__NUM_SOCKETS_MAX - 1))
   {
     // One or more sockets are free.
     socket = &this->socket[this->socketCount];
     this->socketCount++;
+
+    // Initialise socket
+    socket->init(protocol, instantReadHandler, startRollCode);
+
+    if(instantReadHandler == nullptr){ /* do nothing */}
+    else
+    {
+      // Register instant ack callback (i.e. piggyback) hander
+      this->reader->registerInstantCallback(socket->getProtocol(), instantReadHandler);
+    }
+
     return true;
   }
   else
@@ -80,6 +92,9 @@ void Transport::run()
     case TXWAIT: { this->currentState = this->txWait(); break;}
     case POST_TXWAIT: { this->currentState = this->postTxWait(); break;}
   }
+
+  this->writer->run();
+  this->reader->run();
 }
 //----------------------------------------------------------------
 // start of state methods

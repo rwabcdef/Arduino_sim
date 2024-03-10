@@ -49,7 +49,8 @@ public:
 	Transport(Reader* reader, Writer* writer);
 	void run();
 #if defined(TRANSPORT_CONFIG__SOCKETS_ENABLED)
-  bool acquireSocket(Socket* socket);
+  bool acquireSocket(Socket* socket, char* protocol,
+      readHandler instantReadHandler = nullptr, uint16_t startRollCode = 0);
   void commonBehaviour();
   int8_t findSocketIndex(char* protocol);
 #endif

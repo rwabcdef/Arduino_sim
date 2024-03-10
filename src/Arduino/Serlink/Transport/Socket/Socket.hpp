@@ -40,7 +40,7 @@ public:
   //Socket(Writer* writer, Reader* reader);
   Socket();
   bool getActive(){ return this->active; };
-  void init(char* protocol, readHandler instantReadHandler = nullptr, uint16_t startRollCode = 0);
+  void init(char* protocol, readHandler instantReadHandler, uint16_t startRollCode = 0);
 
   //-------------------------------------------
   // Upper (i.e. application) Interface

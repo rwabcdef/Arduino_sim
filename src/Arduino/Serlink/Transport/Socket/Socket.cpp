@@ -23,7 +23,7 @@ void SerLink::Socket::init(char* protocol, readHandler instantReadHandler, uint1
   //this->txBusy = false;
   this->txStatus = TX_STATUS_IDLE;
   strncpy(this->protocol, protocol, Frame::LEN_PROTOCOL);
-  this->instantReadHandler = instantReadHandler;
+  //this->instantReadHandler = instantReadHandler;
   this->txRollCode = startRollCode;
 }
 
