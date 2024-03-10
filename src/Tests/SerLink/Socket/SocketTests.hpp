@@ -15,6 +15,7 @@ public:
   SocketTests(){};
   static void TxThenAck1();
   static void RxThenStdAck(); // standard ack, i.e., no instant callback handler used.
+  static void RxThenPiggyBackAck();// Piggyback ack, i.e., instant callback handler used.
 };
 
 

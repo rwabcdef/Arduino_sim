@@ -113,7 +113,8 @@ int main(int argc, char const *argv[])
 	  //SerLinkRxTests::stdRx1();
 	  //WriterTests::ackTest1();
 	  //SocketTests::TxThenAck1();
-	  SocketTests::RxThenStdAck();
+	  //SocketTests::RxThenStdAck();
+	  SocketTests::RxThenPiggyBackAck();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
