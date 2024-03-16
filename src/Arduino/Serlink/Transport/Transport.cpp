@@ -21,6 +21,7 @@ reader(reader), writer(writer)
   this->socketCount = 0;
   this->currentState = IDLE;
 }
+
 bool Transport::acquireSocket(Socket* socket, char* protocol,
     readHandler instantReadHandler, uint16_t startRollCode)
 {
@@ -71,6 +72,8 @@ int8_t Transport::findSocketIndex(char* protocol)
 // Common behaviour for all states.
 void Transport::commonBehaviour()
 {
+#if defined(TRANSPORT_CONFIG__SOCKETS_ENABLED)
+
   if(this->reader->getRxFrame(this->rxFrame))
   {
     // A frame has been received
@@ -82,6 +85,8 @@ void Transport::commonBehaviour()
       this->socket[socketIndex].setRxFrame(this->rxFrame);
     }
   }
+
+#endif
 }
 
 void Transport::run()
@@ -96,6 +101,7 @@ void Transport::run()
   this->writer->run();
   this->reader->run();
 }
+
 //----------------------------------------------------------------
 // start of state methods
 

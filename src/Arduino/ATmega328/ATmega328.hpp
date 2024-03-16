@@ -56,14 +56,16 @@ ISR(UART_ISR_RX);
 ISR(UART_ISR_TX);
 ISR(TIMER0_ISR);
 
-#ifdef __cplusplus
-}
-#endif
-
 typedef void (*setClearIntBitCallBack)();
 
 void setSet_UDRIE0_CallBack(setClearIntBitCallBack cb);
 void setClr_UDRIE0_CallBack(setClearIntBitCallBack cb);
+
+#ifdef __cplusplus
+}
+#endif
+
+
 
 /*
 #ifdef __cplusplus

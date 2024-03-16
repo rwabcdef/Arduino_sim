@@ -76,7 +76,7 @@ void Reader::run()
 		case IDLE: { this->currentState = this->idle(); break;}
 		case ACKDELAY: { this->currentState = this->ackDelay(); break;}
 		case TXACKWAIT: { this->currentState = this->txAckWait(); break;}
-    case RXDELAY: { this->currentState = this->rxDelay(); break;}
+		case RXDELAY: { this->currentState = this->rxDelay(); break;}
 	}
 }
 
@@ -167,8 +167,8 @@ uint8_t Reader::idle()
 			  {
 			    // do not use data length and data in ack frame that was set by the instantHandler
 			    this->ackFrame.type = Frame::TYPE_ACK;
-          this->ackFrame.dataLen = Frame::ACK_OK;
-          memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
+				this->ackFrame.dataLen = Frame::ACK_OK;
+				memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
 			  }
 			  else
 			  {
@@ -197,7 +197,7 @@ uint8_t Reader::idle()
       return RXDELAY;
 		}
 		else if(this->rxFrame.type == Frame::TYPE_ACK)
-    {
+		{
       // Received Frame is an ack frame
 
 		  if(this->writer != nullptr)
@@ -208,7 +208,7 @@ uint8_t Reader::idle()
 		    // Pass received frame onto the associated Writer.
 		    this->writer->setAckFrame(this->rxFrame);
 		  }
-    }
+		}
 		else
 		{
 		  // Un-recognised frame type
@@ -222,6 +222,7 @@ uint8_t Reader::idle()
 
 	return IDLE;
 }
+
 uint8_t Reader::ackDelay()
 {
 	if(swTimer_tickCheckTimeout(&this->startTick, 10))
@@ -229,7 +230,6 @@ uint8_t Reader::ackDelay()
 		//sprintf(this->s, "Reader::ackDelay() done\n\0", 0);
 
 		//this->debugWrite(this->s);
-
 
 		memset((char*)this->ackBuffer, 0, this->bufferLen);
 		uint8_t ret;
@@ -248,6 +248,7 @@ uint8_t Reader::ackDelay()
 	}
 	return ACKDELAY;
 }
+
 uint8_t Reader::txAckWait()
 {
 	if(!this->getUartTxBusy())
@@ -256,14 +257,14 @@ uint8_t Reader::txAckWait()
 		this->debugWrite(this->s);
 
 		swTimer_tickReset(&this->startTick);
-    return RXDELAY;
+		return RXDELAY;
 	}
 	return TXACKWAIT;
 }
 
 uint8_t Reader::rxDelay()
 {
-  if(swTimer_tickCheckTimeout(&this->startTick, 50))
+  if(swTimer_tickCheckTimeout(&this->startTick, 20))
   {
     this->rxFlag = true;
 

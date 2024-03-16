@@ -1,12 +1,22 @@
 /*
- * SocketTests.cpp
+ * TransportTests.cpp
  *
- *  Created on: 19 Dec 2023
- *      Author: rw123
+ *  Created on: 16 Mar 2024
+ *      Author: rob
  */
 
 
-#include "SocketTests.hpp"
+/*
+ * TransportTests.cpp
+ *
+ *  Created on: 15 Mar 2024
+ *      Author: rob
+ */
+
+#include "../Transport/TransportTests.hpp"
+
+#include "Transport.hpp"
+#include <ATmega328.hpp>
 #include "env.hpp"
 #include "DebugPrint.hpp"
 #include "Global.hpp"
@@ -41,6 +51,7 @@ static uint8_t uartTxCharIndex = 0;
 // These objects MUST be global to avoid a stack overflow.
 static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer, UART_BUFF_LEN);
 static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN, &writer0);
+static SerLink::Transport transport0(&reader0, &writer0);
 static InterruptSchedule* pUartRxInterrupt;
 static SerLink::Frame rxFrameFromReader0;  // received frame from reader0
 
@@ -134,13 +145,12 @@ static void uartRxHandler(void* pData)
   debugPrint->writeLine(s, DebugPrint_defs::UartRx);
   sei();
 }
-
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 
 
 // Transmit a frame and then receive the ack
-void SocketTests::TxThenAck1()
+void TransportTests::TxThenAck1()
 {
   char s[256] = {0};
   char uartRxDebugStr[128];
@@ -251,181 +261,3 @@ void SocketTests::TxThenAck1()
     ASSERT_EQUAL(20, swTimer_tickElapsed(startTick));
   }
 }
-
-//---------------------------------------------------------------
-// Rx of frame then std ack
-void SocketTests::RxThenStdAck()
-{
-  const uint16_t sLen = 256;
-  char s[sLen] = {0};
-  char uartRxDebugStr[128];
-  volatile char rxBuffer[UART_BUFF_LEN];
-  Event uartRx(uartRxHandler);
-  uint16_t startTick;
-  swTimer_tickReset(&startTick);
-  //char ackxBuffer[32];
-  uint64_t current = 0;
-  //bool txFrameSent = false;
-  uint8_t retCode;
-
-  //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
-
-  // Frame that is initially sent
-  static SerLink::Frame rxFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
-
-  writer0.debugOn = true;
-  reader0.init();  // Initialises uart hardware & buffers
-
-  initDebug();
-  initRun(60000);
-
-  setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
-  setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
-
-  // Setup initial receive frame.
-  rxFrame.toString((char*) rxBuffer, &retCode);
-  pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, (const char*)rxBuffer, 6000, 530);
-  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
-
-  debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
-
-  sei();
-  simClk->start();
-
-  do
-  {
-    current = simClk->getCurrent();
-    if(4000 == current)
-    //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
-    {
-      debugPrint->writeLine("pA", DebugPrint_defs::Zero);
-    }
-
-    writer0.run();
-    reader0.run();
-
-    if(reader0.getRxFrame(rxFrameFromReader0))
-    {
-    	// Frame received from reader0.
-    	memset(s, 0, sLen);
-    	sprintf(s, "rx frame: ", nullptr);
-    	uint8_t retCode = 0;
-    	rxFrameFromReader0.toString(&s[10], &retCode);
-    	debugPrint->writeLine(s, DebugPrint_defs::UnitTest0);
-    }
-
-    if(30000 == current)
-    {
-      //printf("at 30000\n");
-      debugPrint->writeLine("at 30000", DebugPrint_defs::Zero);
-    }
-
-  }while(!simClk->getDone());
-
-  //simClk->join(); // Wait for simClk thread to completely terminate
-  //endSys();
-  endRun();
-
-
-  //ASSERT_EQUALM("x should be 5", 5, current);
-
-  if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT)
-  {
-    ASSERT(current == 20000);
-    ASSERT_EQUAL(20000, current);
-    ASSERT_EQUAL(20, swTimer_tickElapsed(startTick));
-  }
-}
-//---------------------------------------------------------------
-// Instantaneous ack, i.e., piggyback handler for reader0.
-static bool testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* data);
-
-// Rx of frame then std ack
-void SocketTests::RxThenPiggyBackAck()
-{
-  char s[256] = {0};
-  char uartRxDebugStr[128];
-  volatile char rxBuffer[UART_BUFF_LEN];
-  Event uartRx(uartRxHandler);
-  uint16_t startTick;
-  swTimer_tickReset(&startTick);
-  //char ackxBuffer[32];
-  uint64_t current = 0;
-  //bool txFrameSent = false;
-  uint8_t retCode;
-
-  //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
-
-  // Frame that is initially sent
-  static SerLink::Frame rxFrame("TST05", SerLink::Frame::TYPE_TRANSMISSION, 615, 9, "hello Bob");
-
-  reader0.registerInstantCallback("TST05", testReadHandler);
-
-  writer0.debugOn = true;
-  reader0.init();  // Initialises uart hardware & buffers
-
-  initDebug();
-  initRun(50000);
-
-  setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
-  setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
-
-  // Setup initial receive frame.
-  rxFrame.toString((char*) rxBuffer, &retCode);
-  pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, (const char*)rxBuffer, 6000, 530);
-  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
-
-  debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
-
-  sei();
-  simClk->start();
-
-  do
-  {
-    current = simClk->getCurrent();
-    if(4000 == current)
-    //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
-    {
-      debugPrint->writeLine("pA", DebugPrint_defs::Zero);
-    }
-
-    writer0.run();
-    reader0.run();
-
-    if(30000 == current)
-    {
-      //printf("at 30000\n");
-      debugPrint->writeLine("at 30000", DebugPrint_defs::Zero);
-    }
-
-  }while(!simClk->getDone());
-
-  //simClk->join(); // Wait for simClk thread to completely terminate
-  //endSys();
-  endRun();
-
-
-  //ASSERT_EQUALM("x should be 5", 5, current);
-
-  if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT)
-  {
-    ASSERT(current == 20000);
-    ASSERT_EQUAL(20000, current);
-    ASSERT_EQUAL(20, swTimer_tickElapsed(startTick));
-  }
-}
-
-// Instant rx handler (i.e. payload goes into ack frame of reader)
-static bool testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* data)
-{
-  uint8_t pRetCode;
-  rxFrame.toString(debugStr, &pRetCode);
-  debugPrint->writeLine(debugStr, DebugPrint_defs::UnitTest0);
-
-  sprintf(data, "Echo: ");
-  strncpy(&data[6], rxFrame.data, (long) rxFrame.dataLen);
-  *dataLen = rxFrame.dataLen + 6;
-
-  return true;
-}
-//---------------------------------------------------------------

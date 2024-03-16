@@ -23,6 +23,7 @@
 #include "WriterTests.hpp"
 #include "SocketTests.hpp"
 #include "ButtonTests.hpp"
+#include "TransportTests.hpp"
 
 using namespace std;
 
@@ -114,7 +115,8 @@ int main(int argc, char const *argv[])
 	  //WriterTests::ackTest1();
 	  //SocketTests::TxThenAck1();
 	  //SocketTests::RxThenStdAck();
-	  SocketTests::RxThenPiggyBackAck();
+	  //SocketTests::RxThenPiggyBackAck();
+	  TransportTests::TxThenAck1();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
