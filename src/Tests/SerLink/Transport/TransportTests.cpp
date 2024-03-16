@@ -220,15 +220,19 @@ void TransportTests::TxThenAck1()
       //sprintf(uartTxFrame, "hello\n", 0);
       //uart_write(uartTxFrame);
       //writer0.sendFrame(txFrame);                // start send of tx frame
-      socket0->sendData("hello Dave", 10, true);   // use socket to send frame
-      txFrameSent = true;
 
-      // Set up ack frame to be received
-      uint8_t retCode;
-      ackFrame.toString(ackBuffer, &retCode);
-      pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer,
-      simClk->getCurrent() + 20000, 530);
-      interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+      if(SerLink::Socket::TX_STATUS_IDLE == socket0->getAndClearSendStatus())
+      {
+    	  socket0->sendData("hello Dave", 10, true);   // use socket to send frame
+		  txFrameSent = true;
+
+		  // Set up ack frame to be received
+		  uint8_t retCode;
+		  ackFrame.toString(ackBuffer, &retCode);
+		  pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer,
+		  simClk->getCurrent() + 20000, 530);
+		  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+      }
     }
 
 //    writer0.run();

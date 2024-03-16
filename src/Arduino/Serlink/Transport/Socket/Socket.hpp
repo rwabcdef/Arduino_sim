@@ -34,8 +34,8 @@ private:
   uint16_t txRollCode;
 
 public:
-  const uint8_t TX_STATUS_IDLE = 5;
-  const uint8_t TX_STATUS_BUSY = 6;
+  const static uint8_t TX_STATUS_IDLE = 5;
+  const static uint8_t TX_STATUS_BUSY = 6;
 
   //Socket(Writer* writer, Reader* reader);
   Socket();
