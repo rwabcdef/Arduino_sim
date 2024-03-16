@@ -22,9 +22,11 @@ reader(reader), writer(writer)
   this->currentState = IDLE;
 }
 
-bool Transport::acquireSocket(Socket* socket, char* protocol,
-    readHandler instantReadHandler, uint16_t startRollCode)
+Socket* Transport::acquireSocket(char* protocol,
+		  uint16_t startRollCode, readHandler instantReadHandler)
 {
+	Socket* socket = nullptr;
+
   if(this->socketCount < (TRANSPORT_CONFIG__NUM_SOCKETS_MAX - 1))
   {
     // One or more sockets are free.
@@ -41,13 +43,10 @@ bool Transport::acquireSocket(Socket* socket, char* protocol,
       this->reader->registerInstantCallback(socket->getProtocol(), instantReadHandler);
     }
 
-    return true;
   }
-  else
-  {
-    // All sockets are already in use
-    return false;
-  }
+  else{ /* All sockets are already in use - so do nothing */ }
+
+  return socket;
 }
 
 int8_t Transport::findSocketIndex(char* protocol)

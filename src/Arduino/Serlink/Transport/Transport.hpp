@@ -52,8 +52,8 @@ public:
 
 #if defined(TRANSPORT_CONFIG__SOCKETS_ENABLED)
 
-  bool acquireSocket(Socket* socket, char* protocol,
-      readHandler instantReadHandler = nullptr, uint16_t startRollCode = 0);
+	Socket* acquireSocket(char* protocol,
+		  uint16_t startRollCode = 0, readHandler instantReadHandler = nullptr);
 
   int8_t findSocketIndex(char* protocol);
 

@@ -13,8 +13,7 @@
  *      Author: rob
  */
 
-#include "../Transport/TransportTests.hpp"
-
+#include "TransportTests.hpp"
 #include "Transport.hpp"
 #include <ATmega328.hpp>
 #include "env.hpp"
@@ -161,11 +160,12 @@ void TransportTests::TxThenAck1()
   char ackBuffer[32];
   uint64_t current = 0;
   bool txFrameSent = false;
+  SerLink::Socket* socket0;
 
   //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
 
   // Frame that is initially sent
-  static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 6, "hello1");
+  //static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 6, "hello1");
 
   // Ack frame that is received (i.e. from simulated remote device).
   static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, SerLink::Frame::ACK_OK, "");
@@ -182,6 +182,12 @@ void TransportTests::TxThenAck1()
   setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
   setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
 
+  socket0 = transport0.acquireSocket("TST04", 615);
+  if(nullptr == socket0)
+  {
+	  debugPrint->writeLine("socket NOT acquired", DebugPrint_defs::Zero);
+	  return;
+  }
 
   //ackFrame.toString(ackBuffer, &retCode);
   //pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer, 20000, 530);
@@ -210,9 +216,11 @@ void TransportTests::TxThenAck1()
       //printf("intThreadId:  0x%x\n", std::hash<std::thread::id>{}(intThreadId));
       //x = true;
 
+
       //sprintf(uartTxFrame, "hello\n", 0);
       //uart_write(uartTxFrame);
-      writer0.sendFrame(txFrame);                // start send of tx frame
+      //writer0.sendFrame(txFrame);                // start send of tx frame
+      socket0->sendData("hello Dave", 10, true);   // use socket to send frame
       txFrameSent = true;
 
       // Set up ack frame to be received
@@ -223,8 +231,9 @@ void TransportTests::TxThenAck1()
       interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
     }
 
-    writer0.run();
-    reader0.run();
+//    writer0.run();
+//    reader0.run();
+      transport0.run();
 
     if(txFrameSent)
     {
