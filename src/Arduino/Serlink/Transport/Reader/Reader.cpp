@@ -299,7 +299,7 @@ uint8_t Reader::getUartRxLenAndReset()
 {
 #ifdef READER_CONFIG__READER0
 
-	if(this->id == READER_CONFIG__READER0_ID)
+  if(this->id == READER_CONFIG__READER0_ID)
 	{
 		return uart_getRxLenAndReset();
 	}

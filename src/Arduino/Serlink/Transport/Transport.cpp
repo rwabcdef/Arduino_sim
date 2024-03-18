@@ -25,7 +25,7 @@ reader(reader), writer(writer)
 Socket* Transport::acquireSocket(char* protocol,
 		  uint16_t startRollCode, readHandler instantReadHandler)
 {
-	Socket* socket = nullptr;
+  Socket* socket = nullptr;
 
   if(this->socketCount < (TRANSPORT_CONFIG__NUM_SOCKETS_MAX - 1))
   {
