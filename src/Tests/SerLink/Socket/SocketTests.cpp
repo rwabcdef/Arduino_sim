@@ -270,7 +270,7 @@ void SocketTests::RxThenStdAck()
 
   //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
 
-  // Frame that is initially sent
+  // Frame that is initially received
   static SerLink::Frame rxFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
 
   writer0.debugOn = true;

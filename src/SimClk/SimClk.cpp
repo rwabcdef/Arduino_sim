@@ -43,7 +43,7 @@ void SimClk::run()
 	int i, j;
 	do
 	{
-		for(i=0;i<300;i++)
+		for(i=0;i<500;i++)
 		{
 			this->isPrime(this->value);
 		}

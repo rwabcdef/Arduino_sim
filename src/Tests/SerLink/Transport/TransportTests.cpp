@@ -147,7 +147,6 @@ static void uartRxHandler(void* pData)
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 
-
 // Transmit a frame and then receive the ack
 void TransportTests::TxThenAck1()
 {
@@ -162,16 +161,8 @@ void TransportTests::TxThenAck1()
   bool txFrameSent = false;
   SerLink::Socket* socket0;
 
-  //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
-
-  // Frame that is initially sent
-  //static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 6, "hello1");
-
   // Ack frame that is received (i.e. from simulated remote device).
   static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, SerLink::Frame::ACK_OK, "");
-
-  //uint8_t retCode;
-  //txFrame.toString(ackBuffer, &retCode);
 
   writer0.debugOn = true;
   reader0.init();  // Initialises uart hardware & buffers
@@ -189,16 +180,7 @@ void TransportTests::TxThenAck1()
 	  return;
   }
 
-  //ackFrame.toString(ackBuffer, &retCode);
-  //pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, ackBuffer, 20000, 530);
-  //pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST04A615900\n", 20000, 530);
-  //interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
-//  SerLink::Reader reader0(READER_CONFIG__READER0_ID);
-
   debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
-  //return 0;
-
-  //uart_init((char*) rxBuffer, (uint8_t) UART_BUFF_LEN);
 
   sei();
   simClk->start();
@@ -210,16 +192,6 @@ void TransportTests::TxThenAck1()
     //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
     {
       debugPrint->writeLine("pA", DebugPrint_defs::Zero);
-      //printf("pB");
-
-      //printf("mainThreadId: 0x%x\n", std::hash<std::thread::id>{}(mainThreadId));
-      //printf("intThreadId:  0x%x\n", std::hash<std::thread::id>{}(intThreadId));
-      //x = true;
-
-
-      //sprintf(uartTxFrame, "hello\n", 0);
-      //uart_write(uartTxFrame);
-      //writer0.sendFrame(txFrame);                // start send of tx frame
 
       if(SerLink::Socket::TX_STATUS_IDLE == socket0->getAndClearSendStatus())
       {
@@ -235,8 +207,6 @@ void TransportTests::TxThenAck1()
       }
     }
 
-//    writer0.run();
-//    reader0.run();
       transport0.run();
 
     if(txFrameSent)
@@ -260,8 +230,96 @@ void TransportTests::TxThenAck1()
 
   }while(!simClk->getDone());
 
-  //simClk->join(); // Wait for simClk thread to completely terminate
-  //endSys();
+  endRun();
+
+
+  //ASSERT_EQUALM("x should be 5", 5, current);
+
+  if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT)
+  {
+    ASSERT(current == 20000);
+    ASSERT_EQUAL(20000, current);
+    ASSERT_EQUAL(20, swTimer_tickElapsed(startTick));
+  }
+}
+
+//---------------------------------------------------------------
+// Rx of frame then std ack
+void TransportTests::RxThenStdAck()
+{
+  const uint16_t sLen = 64;
+  char s[sLen] = {0};
+  //char uartRxDebugStr[128];
+  volatile char rxBuffer[UART_BUFF_LEN];
+  Event uartRx(uartRxHandler);
+  uint16_t startTick;
+  swTimer_tickReset(&startTick);
+  //char ackBuffer[32];
+  uint64_t current = 0;
+  //bool txFrameSent = false;
+  SerLink::Socket* socket0;
+  uint8_t retCode;
+  const uint8_t SOCK_DATA_MAX_LEN = 32;
+  uint8_t sockRxDataLen;
+  char sockRxData[SOCK_DATA_MAX_LEN];
+
+  // Frame that is initially received
+  static SerLink::Frame rxFrame("TST05", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
+
+  writer0.debugOn = true;
+  reader0.init();  // Initialises uart hardware & buffers
+  reader0.debugOn = true;
+
+  initDebug();
+  initRun(70000);
+
+  // Setup initial receive frame.
+  rxFrame.toString((char*) rxBuffer, &retCode);
+  pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, (const char*)rxBuffer, 6000, 530);
+  interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
+
+  setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
+  setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
+
+  socket0 = transport0.acquireSocket("TST05", 615);
+  if(nullptr == socket0)
+  {
+	  debugPrint->writeLine("socket NOT acquired", DebugPrint_defs::Zero);
+	  return;
+  }
+
+  debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
+
+  sei();
+  simClk->start();
+
+  do
+  {
+    current = simClk->getCurrent();
+    if(4000 == current)
+    //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
+    {
+      debugPrint->writeLine("pA", DebugPrint_defs::Zero);
+    }
+
+    transport0.run();
+
+    if(socket0->getRxData(sockRxData, &sockRxDataLen))
+    {
+	  // data received from socket0.
+      memset(s, 0, sLen);
+      sprintf(s, "socket0 rx: %s", sockRxData);
+      debugPrint->writeLine(s, DebugPrint_defs::UnitTest0);
+    }
+
+    if(30000 == current)
+    {
+      //printf("at 30000\n");
+      debugPrint->writeLine("at 30000", DebugPrint_defs::Zero);
+    }
+
+  }while(!simClk->getDone());
+
   endRun();
 
 

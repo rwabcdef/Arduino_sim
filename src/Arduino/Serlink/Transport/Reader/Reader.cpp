@@ -182,8 +182,12 @@ uint8_t Reader::idle()
 //			  volatile int n = i * 7;
 //			}
 
-			//sprintf(this->s, "uart rx: %s", this->rxBuffer);
-      //this->debugWrite(this->s);
+			if(this->debugOn)
+			{
+				sprintf(this->s, "uart rx: %s", this->rxBuffer);
+				this->debugWrite(this->s);
+			}
+
 			sei();
 			//return IDLE;
 			return ACKDELAY;
@@ -192,9 +196,9 @@ uint8_t Reader::idle()
 		{
 		  // Received Frame is unidirectional - so do nothing
 
-      swTimer_tickReset(&this->startTick);
-      sei();
-      return RXDELAY;
+          swTimer_tickReset(&this->startTick);
+          sei();
+          return RXDELAY;
 		}
 		else if(this->rxFrame.type == Frame::TYPE_ACK)
 		{
@@ -238,8 +242,11 @@ uint8_t Reader::ackDelay()
 		//char ackBuffer[64] = {0};
 		//sprintf(ackBuffer, "TestAck\n", 0);
 
-		sprintf(this->s, "ack frame: %s\n\0", this->ackBuffer);
-		this->debugWrite(this->s);
+		if(this->debugOn)
+		{
+			sprintf(this->s, "ack frame: %s\n\0", this->ackBuffer);
+			this->debugWrite(this->s);
+		}
 
 		this->uartWrite((char*)this->ackBuffer);
 		//this->write((char*)"hello\n\0");
@@ -253,8 +260,11 @@ uint8_t Reader::txAckWait()
 {
 	if(!this->getUartTxBusy())
 	{
-		sprintf(this->s, "Reader::txAckWait() done\n\0", 0);
-		this->debugWrite(this->s);
+		if(this->debugOn)
+		{
+			sprintf(this->s, "Reader::txAckWait() done\n\0", 0);
+			this->debugWrite(this->s);
+		}
 
 		swTimer_tickReset(&this->startTick);
 		return RXDELAY;

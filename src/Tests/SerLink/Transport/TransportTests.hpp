@@ -14,6 +14,7 @@ class TransportTests
 public:
 	TransportTests(){};
 	static void TxThenAck1();
+	static void RxThenStdAck();
 };
 
 

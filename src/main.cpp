@@ -116,7 +116,8 @@ int main(int argc, char const *argv[])
 	  //SocketTests::TxThenAck1();
 	  //SocketTests::RxThenStdAck();
 	  //SocketTests::RxThenPiggyBackAck();
-	  TransportTests::TxThenAck1();
+	  //TransportTests::TxThenAck1();
+	  TransportTests::RxThenStdAck();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
