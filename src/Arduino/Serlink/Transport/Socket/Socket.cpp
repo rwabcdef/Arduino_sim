@@ -100,7 +100,7 @@ bool SerLink::Socket::getTxFrame(Frame& txFrame)
   if(this->txFlag)
   {
     this->txFrame.copy(&txFrame);
-    this->txFlag = false;
+    this->txFlag = false;         // clear tx flag
     //this->txBusy = true;
     return true;
   }

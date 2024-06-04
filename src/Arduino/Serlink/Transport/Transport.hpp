@@ -32,26 +32,30 @@ private:
 #if defined(TRANSPORT_CONFIG__NUM_SOCKETS_MAX)
   Socket socket[TRANSPORT_CONFIG__NUM_SOCKETS_MAX];
   uint8_t currentTxSocketIndex;
-  uint8_t socketCount;
+  uint8_t socketCount;                  // number of sockets currently in use
 #endif
   Reader* reader;
   Writer* writer;
 	uint16_t startTick;
 	//uint16_t txDataLen;
 	//char txData[UART_BUFF_LEN];
+
 	Frame rxFrame, txFrame;
 
+	// State methods
 	uint8_t idle();
 	uint8_t txWait();
 	uint8_t postTxWait();
 
+	void commonBehaviour();
+
 public:
 	Transport(Reader* reader, Writer* writer);
 	void run();
-	void commonBehaviour();
 
 #if defined(TRANSPORT_CONFIG__SOCKETS_ENABLED)
 
+	// Used to acquire a socket
 	Socket* acquireSocket(char* protocol,
 		  uint16_t startRollCode = 0, readHandler instantReadHandler = nullptr);
 

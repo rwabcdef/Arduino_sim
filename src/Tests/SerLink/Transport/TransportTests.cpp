@@ -281,6 +281,7 @@ void TransportTests::RxThenStdAck()
   setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
   setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
 
+  // Acquire a socket from the transport layer
   socket0 = transport0.acquireSocket("TST05", 245);
   if(nullptr == socket0)
   {

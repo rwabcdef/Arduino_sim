@@ -28,7 +28,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/cute}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/env}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Arduino/ATmega328}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Arduino/ArdMod/Action}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Arduino/EmbUtils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/SimClk}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/TSQueue}&quot;"/>
@@ -58,6 +57,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Tests/SerLink/Transport}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Tests/SerLink/Socket}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Tests/hw/Button}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Arduino/ArdMod/Event}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1431514921" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1098145993" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -86,11 +86,12 @@
 					<sourceEntries>
 						<entry excluding="src|Transport|Debug/src/Tests/SerLink/Transport|Frame" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry excluding="DebugPrint|env|Global|cute|testSys|InterruptRunner|Arduino|Tests|SimClk|Event|TSQueue|gtest" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
-						<entry excluding="ArdMod/Action|hw/timer0|ATmega328|Serlink|swTimer|hw/uart|StateMachine|hw/Button|cpp_wrappers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino"/>
+						<entry excluding="ArdMod/Event|ArdMod/Action|hw/timer0|ATmega328|Serlink|swTimer|hw/uart|StateMachine|hw/Button|cpp_wrappers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/ATmega328"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/ArdMod/Action"/>
-						<entry excluding="Utils|DebugUser|Transport" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/ArdMod/Event"/>
+						<entry excluding="Event|Utils|DebugUser|Transport" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink/DebugUser"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink/Event"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/Arduino/Serlink/Transport"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink/Utils"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/StateMachine"/>
@@ -164,11 +165,12 @@
 					<sourceEntries>
 						<entry excluding="src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry excluding="DebugPrint|env|Global|cute|testSys|InterruptRunner|Arduino|Tests|SimClk|Event|TSQueue|gtest" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
-						<entry excluding="ArdMod/Action|hw/timer0|ATmega328|Serlink|swTimer|hw/uart|StateMachine|hw/Button|cpp_wrappers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino"/>
+						<entry excluding="ArdMod/Event|ArdMod/Action|hw/timer0|ATmega328|Serlink|swTimer|hw/uart|StateMachine|hw/Button|cpp_wrappers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/ATmega328"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/ArdMod/Action"/>
-						<entry excluding="Utils|DebugUser|Transport" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/ArdMod/Event"/>
+						<entry excluding="Event|Utils|DebugUser|Transport" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink/DebugUser"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink/Event"/>
 						<entry excluding="Socket|Writer" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink/Transport"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/Serlink/Utils"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Arduino/StateMachine"/>
