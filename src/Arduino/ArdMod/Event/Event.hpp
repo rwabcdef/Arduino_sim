@@ -8,6 +8,9 @@
 #ifndef EVENT_HPP_
 #define EVENT_HPP_
 
+#include <stdint.h>
+
+
 namespace ArdMod
 {
 
@@ -15,13 +18,11 @@ class Event{
 
 public:
 
-  Event(char cmd, char comp = '0');
-  char getCommand();
-  char getComponent();
+  Event(char act);
+  void serialise(char* str, uint8_t* strLen);
 
-private:
-  char commmand;
-  char component;
+
+  char action;
 
 };
 
