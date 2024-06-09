@@ -14,7 +14,7 @@ namespace SerLink
 {
 class Utils{
 public:
-	//static void rollCodeToStr
+	static void uint16ToStr(uint16_t value, char* str, uint8_t numDigits = 5);
 
 };
 
