@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <SerLink_Utils.hpp>
 #include "UtilsTests.hpp"
-#include "Utils.hpp"
 
 
 namespace SerLink
@@ -74,4 +74,51 @@ void UtilsTests::uint16ToStr()
   //--------------------------------------
 }
 
+void UtilsTests::strToUint8()
+{
+  uint8_t strLen = 4, value;
+  char str[strLen];
+
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "253", 3);
+  value = Utils::strToUint8(str);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "253", 3);
+  value = Utils::strToUint8(str, 3);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "253", 3);
+  value = Utils::strToUint8(str, 2);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "042", 3);
+  value = Utils::strToUint8(str);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "042", 3);
+  value = Utils::strToUint8(str, 3);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "060", 3);
+  value = Utils::strToUint8(str, 3);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "007", 3);
+  value = Utils::strToUint8(str);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+  memset(str, 0, strLen);
+  strncpy(str, "007", 3);
+  value = Utils::strToUint8(str, 3);
+  printf("value [%s]: %d\n", str, value);
+  //--------------------------------------
+}
 }

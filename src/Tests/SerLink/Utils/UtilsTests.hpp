@@ -14,6 +14,7 @@ class UtilsTests
 {
 public:
   static void uint16ToStr();
+  static void strToUint8();
 };
 }
 

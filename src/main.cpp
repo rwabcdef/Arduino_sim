@@ -119,7 +119,8 @@ int main(int argc, char const *argv[])
 	  //SocketTests::RxThenPiggyBackAck();
 	  //TransportTests::TxThenAck1();
 	  //TransportTests::RxThenStdAck();
-	  SerLink::UtilsTests::uint16ToStr();
+	  //SerLink::UtilsTests::uint16ToStr();
+	  SerLink::UtilsTests::strToUint8();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
