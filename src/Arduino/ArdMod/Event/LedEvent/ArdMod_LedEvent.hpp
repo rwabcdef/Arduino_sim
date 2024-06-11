@@ -27,6 +27,9 @@ class LedEvent : public Event
     static const char FLASH_ON_LEN = 3;
     static const char FLASH_OFF_LEN = 3;
 
+    // LedEvent frame string length (includes null termination char)
+    static const uint8_t FRAME_LEN = 1 + FLASH_DELAY_LEN + FLASH_ON_LEN + FLASH_OFF_LEN + 1;
+
     LedEvent(){};
     static void deSerialise(char* str, Event* outEvent);
 
