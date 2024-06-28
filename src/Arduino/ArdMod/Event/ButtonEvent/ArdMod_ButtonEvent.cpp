@@ -32,12 +32,14 @@ uint8_t ButtonEvent::serialise(char* str)
   return i;
 }
 
+/*
 void ButtonEvent::deSerialise(char* str, Event* outEvent)
 {
   uint8_t i = 0;
 
   outEvent->action = str[i];
 }
+*/
 
 }
 
