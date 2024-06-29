@@ -9,6 +9,7 @@
 #define ARDMOD_LEDEVENT_HPP_
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "ArdMod_Event.hpp"
 
 // ArdMod_LedEvent.hpp
@@ -31,8 +32,11 @@ class LedEvent : public Event
     static const uint8_t FRAME_LEN = 1 + FLASH_DELAY_LEN + FLASH_ON_LEN + FLASH_OFF_LEN + 1;
 
     LedEvent(){};
+    //uint8_t serialise(char* str){};
     static void deSerialise(char* str, Event* outEvent);
+    void copy(Event* copyEvent);
 
+    bool flashInitialOn;
     uint8_t flashDelayPeriods;
     uint8_t flashOnPeriods;
     uint8_t flashOffPeriods;

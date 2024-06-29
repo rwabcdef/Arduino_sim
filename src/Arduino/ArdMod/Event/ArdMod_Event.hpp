@@ -21,6 +21,7 @@ public:
   Event();
   virtual uint8_t serialise(char* str);
   static void deSerialise(char* str, Event* outEvent);
+  virtual void copy(Event* copyEvent);
 
   char action;
 

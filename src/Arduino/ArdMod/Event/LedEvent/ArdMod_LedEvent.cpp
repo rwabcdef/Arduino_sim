@@ -20,6 +20,15 @@ void LedEvent::deSerialise(char* str, Event* outEvent)
 
   if(ledEvent->action == LedEvent::ACTION_FLASH)
   {
+    if(str[i++] == LedEvent::ACTION_ON)
+    {
+      ledEvent->flashInitialOn = true;
+    }
+    else
+    {
+      ledEvent->flashInitialOn = false;
+    }
+
     ledEvent->flashDelayPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_DELAY_LEN);
     i += LedEvent::FLASH_DELAY_LEN;
 
@@ -32,6 +41,20 @@ void LedEvent::deSerialise(char* str, Event* outEvent)
   else
   {
 
+  }
+}
+
+void LedEvent::copy(Event* copyEvent)
+{
+  LedEvent* copy = (LedEvent*) copyEvent;
+
+  copyEvent->action = this->action;
+
+  if(this->action == LedEvent::ACTION_FLASH)
+  {
+    copy->flashDelayPeriods = this->flashDelayPeriods;
+    copy->flashOnPeriods = this->flashOnPeriods;
+    copy->flashOffPeriods = this->flashOffPeriods;
   }
 }
 

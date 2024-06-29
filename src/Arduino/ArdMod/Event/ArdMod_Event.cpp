@@ -32,4 +32,9 @@ void Event::deSerialise(char* str, Event* outEvent)
   outEvent->action = str[i];
 }
 
+void Event::copy(Event* copyEvent)
+{
+  copyEvent->action = this->action;
+}
+
 };
