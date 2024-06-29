@@ -72,9 +72,9 @@ uint8_t LedModule::on()
     {
       // No - stay in this state
     }
+    this->periodCount++;
   }
 
-  this->periodCount++;
   return ON;
 }
 
@@ -92,7 +92,7 @@ uint8_t LedModule::off()
   {
     // Handle flash mode - is it time to change state ?
 
-    if(this->periodCount >= this->event.flashOnPeriods)
+    if(this->periodCount >= this->event.flashOffPeriods)
     {
       // Yes - go to on state
       this->ledOn(this->port, this->pin);
@@ -103,9 +103,9 @@ uint8_t LedModule::off()
     {
       // No - stay in this state
     }
+    this->periodCount++;
   }
 
-  this->periodCount++;
   return OFF;
 }
 
@@ -119,7 +119,7 @@ uint8_t LedModule::delay()
   }
 
   // Is it time to start standard flashing cycles ?
-  if(this->periodCount >= this->event.flashOnPeriods)
+  if(this->periodCount >= this->event.flashDelayPeriods)
   {
     // Yes
     this->periodCount = 0;
