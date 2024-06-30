@@ -11,14 +11,20 @@
 namespace ArdMod
 {
 
-void LedEvent::deSerialise(char* str, Event* outEvent)
+bool LedEvent::deSerialise(char* str, Event* outEvent)
 {
   uint8_t i = 0;
   LedEvent* ledEvent = (LedEvent*) outEvent;
 
   ledEvent->action = str[i++];
 
-  if(ledEvent->action == LedEvent::ACTION_FLASH)
+  if((ledEvent->action == LedEvent::ACTION_OFF) ||
+      (ledEvent->action == LedEvent::ACTION_ON))
+  {
+    return true;
+  }
+
+  else if(ledEvent->action == LedEvent::ACTION_FLASH)
   {
     if(str[i++] == LedEvent::ACTION_ON)
     {
@@ -37,10 +43,13 @@ void LedEvent::deSerialise(char* str, Event* outEvent)
 
     ledEvent->flashOffPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_OFF_LEN);
     i += LedEvent::FLASH_OFF_LEN;
+
+    return true;
   }
   else
   {
-
+    // invalid action code
+    return false;
   }
 }
 

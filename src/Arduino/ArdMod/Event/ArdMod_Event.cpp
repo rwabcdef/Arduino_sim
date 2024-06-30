@@ -25,7 +25,7 @@ uint8_t Event::serialise(char* str)
   return i;
 }
 
-void Event::deSerialise(char* str, Event* outEvent)
+bool Event::deSerialise(char* str, Event* outEvent)
 {
   uint8_t i = 0;
 
