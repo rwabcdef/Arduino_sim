@@ -27,6 +27,15 @@ extern uint8_t DDRD;
 extern uint8_t PORTD;
 extern uint8_t PIND;
 
+#define PORTD0 0
+#define PORTD1 1
+#define PORTD2 2
+#define PORTD3 3
+#define PORTD4 4
+#define PORTD5 5
+#define PORTD6 6
+#define PORTD7 7
+
 #define UART_ISR_RX USART_RX_vect
 #define UART_ISR_TX USART_UDRE_vect
 #define TIMER0_ISR TIMER0_COMPA_vect
