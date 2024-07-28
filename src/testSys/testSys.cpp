@@ -37,16 +37,20 @@ const char* unknownThreadIdLabel = "UN  ";
 
 //volatile uint32_t timer0_tick_ISR = 0;
 
+//----------------------------------
+// Global varaibles (Global.hpp)
 volatile uint32_t g_simClk_uS = 0;
-
 DebugPrint *debugPrint;
+InterruptRunner *interruptRunner; // = new InterruptRunner(debugPrint);
+SimClk *simClk;
+//----------------------------------
 // DebugPrint *debugPrint = new DebugPrint(&MakeTimestamp);
 //InterruptRunner interruptRunner(debugPrint);
 //InterruptRunner *interruptRunner;
-InterruptRunner *interruptRunner = new InterruptRunner(debugPrint);
+
 std::function<void(uint64_t)> tickBind; // = [](uint64_t tick) { interruptRunner->tickRun(tick); };
 //SimClk simClk(5000, tickBind, 7854983);
-SimClk *simClk;
+
 
 std::list<uint32_t>* lst;// = new std::list<uint32_t>{1};
 InterruptSchedule *getIntThreadIdInterrupt;

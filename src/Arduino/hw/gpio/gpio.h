@@ -25,7 +25,9 @@ extern "C" {
 //--------------------------------------------------------------------------------
 void gpio_setPinDirection(uint8_t port, uint8_t pin, uint8_t direction);
 //--------------------------------------------------------------------------------
-void gpio_setPinState(uint8_t port, uint8_t pin, bool state);
+void gpio_setPinHigh(uint8_t port, uint8_t pin);
+//--------------------------------------------------------------------------------
+void gpio_setPinLow(uint8_t port, uint8_t pin);
 //--------------------------------------------------------------------------------
 
 #ifdef __cplusplus

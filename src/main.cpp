@@ -118,9 +118,9 @@ int main(int argc, char const *argv[])
 	  //SocketTests::RxThenStdAck();
 	  //SocketTests::RxThenPiggyBackAck();
 	  //TransportTests::TxThenAck1();
-	  //TransportTests::RxThenStdAck();
+	  TransportTests::RxThenStdAck();
 	  //SerLink::UtilsTests::uint16ToStr();
-	  SerLink::UtilsTests::strToUint8();
+	  //SerLink::UtilsTests::strToUint8();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){

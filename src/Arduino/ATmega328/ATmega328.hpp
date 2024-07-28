@@ -23,9 +23,31 @@ extern uint8_t TCNT0;
 extern uint8_t OCR0A;
 extern uint8_t TIMSK0;
 
+extern uint8_t DDRB;
+extern uint8_t PORTB;
+extern uint8_t PINB;
+
+extern uint8_t DDRC;
+extern uint8_t PORTC;
+extern uint8_t PINC;
+
 extern uint8_t DDRD;
 extern uint8_t PORTD;
 extern uint8_t PIND;
+
+#define PORTB0 0
+#define PORTB1 1
+#define PORTB2 2
+#define PORTB3 3
+#define PORTB4 4
+#define PORTB5 5
+
+#define PORTC0 0
+#define PORTC1 1
+#define PORTC2 2
+#define PORTC3 3
+#define PORTC4 4
+#define PORTC5 5
 
 #define PORTD0 0
 #define PORTD1 1
