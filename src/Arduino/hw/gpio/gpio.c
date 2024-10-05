@@ -7,12 +7,22 @@
 
 #include "env.h"
 #include "gpio.h"
+#include "DebugPrintFromC.hpp"
 
 const uint8_t bitMask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
 const uint8_t invBitMask[] = {0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f};
 
+const char pinNumbers[] = {'0', '1', '2', '3', '4', '5', '6', '7'};
+
+// Returns address of port register if port and pin are legal values,
+// otherwise returns NULL.
 static uint8_t* validatePortPin(uint8_t port, uint8_t pin);
+
+#if defined(ENV_CONFIG__SYSTEM_PC)
+#include <string.h>
+static void getPinSetDebugStr(uint8_t port, uint8_t pin, bool state, char* dest);
+#endif
 
 //--------------------------------------------------------------------------------
 void gpio_setPinDirection(uint8_t port, uint8_t pin, uint8_t direction)
@@ -38,6 +48,8 @@ void gpio_setPinHigh(uint8_t port, uint8_t pin)
       (*portReg) |= bitMask[pin];;
     }
     else{ /* do nothing */ }
+
+    debugWrite("pin high", Gpio);
 }
 //--------------------------------------------------------------------------------
 void gpio_setPinLow(uint8_t port, uint8_t pin)
@@ -74,3 +86,28 @@ uint8_t* validatePortPin(uint8_t port, uint8_t pin)
 
   return NULL;
 }
+//--------------------------------------------------------------------------------
+#if defined(ENV_CONFIG__SYSTEM_PC)
+void getPinSetDebugStr(uint8_t port, uint8_t pin, bool state, char* dest)
+{
+  char stateStr[5] = {0};
+  char portChar = 'X';
+  char pinChar = 'X';
+  if(state)
+  {
+    strncpy(stateStr, "high\0", 5);
+  }
+  else
+  {
+    strncpy(stateStr, "low\0\0", 5);
+  }
+
+  if(port == GPIO_REG__PORTB){ portChar = 'B'; }
+  else if(port == GPIO_REG__PORTC){ portChar = 'C'; }
+  else if(port == GPIO_REG__PORTD){ portChar = 'D'; }
+
+  if(pin < 8){ pinChar = pinNumbers[pin]; }
+
+  sprintf(dest, "Pin %c%c %s", portChar, pinChar, stateStr);
+}
+#endif
