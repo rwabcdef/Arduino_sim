@@ -21,6 +21,7 @@ static uint8_t* validatePortPin(uint8_t port, uint8_t pin);
 
 #if defined(ENV_CONFIG__SYSTEM_PC)
 #include <string.h>
+static bool debugOn = true;
 static void getPinSetDebugStr(uint8_t port, uint8_t pin, bool state, char* dest);
 #endif
 
@@ -49,7 +50,12 @@ void gpio_setPinHigh(uint8_t port, uint8_t pin)
     }
     else{ /* do nothing */ }
 
-    debugWrite("pin high", Gpio);
+#if defined(ENV_CONFIG__SYSTEM_PC)
+    char s[12] = {0};
+    getPinSetDebugStr(port, pin, true, s);
+    debugWrite(s, Gpio);
+#endif
+
 }
 //--------------------------------------------------------------------------------
 void gpio_setPinLow(uint8_t port, uint8_t pin)
@@ -61,6 +67,19 @@ void gpio_setPinLow(uint8_t port, uint8_t pin)
     (*portReg) &= invBitMask[pin];
   }
   else{ /* do nothing */ }
+
+#if defined(ENV_CONFIG__SYSTEM_PC)
+    char s[12] = {0};
+    getPinSetDebugStr(port, pin, true, s);
+    debugWrite(s, Gpio);
+#endif
+}
+//--------------------------------------------------------------------------------
+void gpio_setDebugOn(bool on)
+{
+#if defined(ENV_CONFIG__SYSTEM_PC)
+  debugOn = on;
+#endif
 }
 //--------------------------------------------------------------------------------
 uint8_t* validatePortPin(uint8_t port, uint8_t pin)
