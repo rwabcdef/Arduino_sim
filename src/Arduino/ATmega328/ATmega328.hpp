@@ -64,6 +64,10 @@ extern uint8_t PIND;
 
 extern volatile bool g_enable_USART_UDRE_ISR;
 
+#define GPIO_REG__PORTB 1
+#define GPIO_REG__PORTC 2
+#define GPIO_REG__PORTD 3
+
 #ifdef __cplusplus
 extern "C" {
 #endif

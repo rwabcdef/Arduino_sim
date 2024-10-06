@@ -5,7 +5,6 @@
  *      Author: rw123
  */
 
-#include "env.h"
 #include "gpio.h"
 #include "DebugPrintFromC.hpp"
 

@@ -10,10 +10,9 @@
 
 #include<stdint.h>
 #include<stdbool.h>
+#include "env.h"
 
-#define GPIO_REG__PORTB 1
-#define GPIO_REG__PORTC 2
-#define GPIO_REG__PORTD 3
+
 
 #define GPIO_PIN_DIRECTION__IN 1
 #define GPIO_PIN_DIRECTION__OUT 2
