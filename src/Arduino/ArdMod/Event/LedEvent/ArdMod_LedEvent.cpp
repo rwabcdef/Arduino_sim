@@ -67,4 +67,37 @@ void LedEvent::copy(Event* copyEvent)
   }
 }
 
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+LedEventProducer::LedEventProducer()
+{
+  this->eventReadyFlag = false;
 }
+
+LedEvent* LedEventProducer::getEventPtr()
+{
+  return &this->event;
+}
+
+bool LedEventProducer::hasEvent()
+{
+  bool ret = this->eventReadyFlag;
+  this->eventReadyFlag = false;
+  return ret;
+}
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+LedEventConsumer::LedEventConsumer()
+{
+  this->eventInputFlag = false;
+}
+
+void LedEventConsumer::setEvent(LedEvent* inputEvent)
+{
+  this->eventInputFlag = true;
+  inputEvent->copy(&this->event);
+}
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+} // end of namespace

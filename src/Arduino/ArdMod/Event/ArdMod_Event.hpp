@@ -27,6 +27,13 @@ public:
 
 };
 
+// Abstract base class for all EventProducer classes
+class EventProducerBase{
+public:
+  // Used to poll EventProducer to see if it has an event to consume
+  virtual bool hasEvent() = 0;
+};
+
 }
 
 

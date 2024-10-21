@@ -42,6 +42,25 @@ class LedEvent : public Event
     uint8_t flashOffPeriods;
 };
 
+class LedEventProducer : public EventProducerBase{
+protected:
+  bool eventReadyFlag;
+  LedEvent event;
+public:
+  LedEventProducer();
+  virtual LedEvent* getEventPtr();
+  virtual bool hasEvent();
+};
+
+class LedEventConsumer{
+protected:
+  bool eventInputFlag;
+  LedEvent event;
+public:
+  LedEventConsumer();
+  virtual void setEvent(LedEvent* inputEvent);
+};
+
 }
 
 #endif /* ARDMOD_LEDEVENT_HPP_ */
