@@ -33,7 +33,7 @@ class LedEvent : public Event
 
     LedEvent(){};
     //uint8_t serialise(char* str){};
-    static bool deSerialise(char* str, Event* outEvent);
+    bool deSerialise(char* str);
     void copy(Event* copyEvent);
 
     bool flashInitialOn;

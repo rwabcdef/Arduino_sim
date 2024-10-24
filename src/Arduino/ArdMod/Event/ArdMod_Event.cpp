@@ -12,7 +12,7 @@ namespace ArdMod{
 
 Event::Event()
 {
-
+  this->action = 0;
 }
 
 uint8_t Event::serialise(char* str)
@@ -25,11 +25,13 @@ uint8_t Event::serialise(char* str)
   return i;
 }
 
-bool Event::deSerialise(char* str, Event* outEvent)
+bool Event::deSerialise(char* str)
 {
   uint8_t i = 0;
 
-  outEvent->action = str[i];
+  this->action = str[i];
+
+  return true;
 }
 
 void Event::copy(Event* copyEvent)

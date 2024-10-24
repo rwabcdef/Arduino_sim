@@ -11,37 +11,37 @@
 namespace ArdMod
 {
 
-bool LedEvent::deSerialise(char* str, Event* outEvent)
+bool LedEvent::deSerialise(char* str)
 {
   uint8_t i = 0;
-  LedEvent* ledEvent = (LedEvent*) outEvent;
+  //LedEvent* ledEvent = (LedEvent*) outEvent;
 
-  ledEvent->action = str[i++];
+  this->action = str[i++];
 
-  if((ledEvent->action == LedEvent::ACTION_OFF) ||
-      (ledEvent->action == LedEvent::ACTION_ON))
+  if((this->action == LedEvent::ACTION_OFF) ||
+      (this->action == LedEvent::ACTION_ON))
   {
     return true;
   }
 
-  else if(ledEvent->action == LedEvent::ACTION_FLASH)
+  else if(this->action == LedEvent::ACTION_FLASH)
   {
     if(str[i++] == LedEvent::ACTION_ON)
     {
-      ledEvent->flashInitialOn = true;
+      this->flashInitialOn = true;
     }
     else
     {
-      ledEvent->flashInitialOn = false;
+      this->flashInitialOn = false;
     }
 
-    ledEvent->flashDelayPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_DELAY_LEN);
+    this->flashDelayPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_DELAY_LEN);
     i += LedEvent::FLASH_DELAY_LEN;
 
-    ledEvent->flashOnPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_ON_LEN);
+    this->flashOnPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_ON_LEN);
     i += LedEvent::FLASH_ON_LEN;
 
-    ledEvent->flashOffPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_OFF_LEN);
+    this->flashOffPeriods = SerLink::Utils::strToUint8(&str[i], LedEvent::FLASH_OFF_LEN);
     i += LedEvent::FLASH_OFF_LEN;
 
     return true;

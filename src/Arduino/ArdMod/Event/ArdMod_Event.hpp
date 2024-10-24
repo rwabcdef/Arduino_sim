@@ -19,8 +19,14 @@ class Event{
 public:
 
   Event();
+
+  // Convert this event to a string. Returns the string length.
   virtual uint8_t serialise(char* str);
-  static bool deSerialise(char* str, Event* outEvent);
+
+  // Parses the input string and sets the variables of this event accordingly.
+  virtual bool deSerialise(char* str);
+
+  // Copies the variables of this event into the other event (copyEvent).
   virtual void copy(Event* copyEvent);
 
   char action;
