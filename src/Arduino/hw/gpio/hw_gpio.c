@@ -5,7 +5,7 @@
  *      Author: rw123
  */
 
-#include "gpio.h"
+#include <hw_gpio.h>
 #include "DebugPrintFromC.hpp"
 
 const uint8_t bitMask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};

@@ -33,11 +33,23 @@ public:
 
 };
 
-// Abstract base class for all EventProducer classes
-class EventProducerBase{
+class EventProducer{
+protected:
+  bool eventOutputFlag;
+  Event event;
 public:
-  // Used to poll EventProducer to see if it has an event to consume
-  virtual bool hasEvent() = 0;
+  EventProducer();
+  virtual Event* getEventPtr();
+  virtual bool hasEvent();
+};
+
+class EventConsumer{
+protected:
+  bool eventInputFlag;
+  Event event;
+public:
+  EventConsumer();
+  virtual void setEvent(Event* inputEvent);
 };
 
 }

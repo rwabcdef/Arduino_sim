@@ -39,4 +39,39 @@ void Event::copy(Event* copyEvent)
   copyEvent->action = this->action;
 }
 
-};
+
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+EventProducer::EventProducer()
+{
+  this->eventOutputFlag = false;
+}
+
+Event* EventProducer::getEventPtr()
+{
+  return &this->event;
+}
+
+bool EventProducer::hasEvent()
+{
+  bool ret = this->eventOutputFlag;
+  this->eventOutputFlag = false;
+  return ret;
+}
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+EventConsumer::EventConsumer()
+{
+  this->eventInputFlag = false;
+}
+
+void EventConsumer::setEvent(Event* inputEvent)
+{
+  this->eventInputFlag = true;
+  inputEvent->copy(&this->event);
+}
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+}; // end of namespace

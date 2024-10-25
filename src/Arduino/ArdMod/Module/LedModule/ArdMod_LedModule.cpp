@@ -13,6 +13,7 @@
  */
 
 #include "ArdMod_LedModule.hpp"
+#include "hw_gpio.h"
 
 // State codes (do not use 0)
 #define ON 1
@@ -21,18 +22,19 @@
 
 using namespace ArdMod;
 
-LedModule::LedModule(uint8_t port, uint8_t pin, LedModule_defs::ledOn on, LedModule_defs::ledOff off)
-: port(port), pin(pin), ledOn(ledOn), ledOff(ledOff)
+LedModule::LedModule(uint8_t port, uint8_t pin)
+: EventConsumer(), port(port), pin(pin)
 {
-  this->inputEvent = false;
+  //this->inputEvent = false;
   this->periodCount = 0;
 }
 
+/*
 void LedModule::setEvent(LedEvent& event)
 {
   this->inputEvent = true;
   event.copy(&this->event);
-}
+}*/
 
 void LedModule::run()
 {
@@ -50,6 +52,8 @@ void LedModule::run()
 // On state
 uint8_t LedModule::on()
 {
+  LedEvent* event = (LedEvent*) &this->event;
+
   uint8_t newState = this->common();
   if(newState > 0)
   {
@@ -61,10 +65,10 @@ uint8_t LedModule::on()
   {
     // Handle flash mode - is it time to change state ?
 
-    if(this->periodCount >= this->event.flashOnPeriods)
+    if(this->periodCount >= event->flashOnPeriods)
     {
       // Yes - go to off state
-      this->ledOff(this->port, this->pin);
+      gpio_setPinLow(this->port, this->pin);
       this->periodCount = 0;
       return OFF;
     }
@@ -81,6 +85,8 @@ uint8_t LedModule::on()
 // Off state
 uint8_t LedModule::off()
 {
+  LedEvent* event = (LedEvent*) &this->event;
+
   uint8_t newState = this->common();
   if(newState > 0)
   {
@@ -92,10 +98,10 @@ uint8_t LedModule::off()
   {
     // Handle flash mode - is it time to change state ?
 
-    if(this->periodCount >= this->event.flashOffPeriods)
+    if(this->periodCount >= event->flashOffPeriods)
     {
       // Yes - go to on state
-      this->ledOn(this->port, this->pin);
+      gpio_setPinHigh(this->port, this->pin);
       this->periodCount = 0;
       return ON;
     }
@@ -112,6 +118,8 @@ uint8_t LedModule::off()
 // Delay state
 uint8_t LedModule::delay()
 {
+  LedEvent* event = (LedEvent*) &this->event;
+
   uint8_t newState = this->common();
   if(newState > 0)
   {
@@ -119,21 +127,21 @@ uint8_t LedModule::delay()
   }
 
   // Is it time to start standard flashing cycles ?
-  if(this->periodCount >= this->event.flashDelayPeriods)
+  if(this->periodCount >= event->flashDelayPeriods)
   {
     // Yes
     this->periodCount = 0;
 
-    if(this->event.flashInitialOn == true)
+    if(event->flashInitialOn == true)
     {
       // Initial state was on - so go to off
-      this->ledOff(this->port, this->pin);
+      gpio_setPinLow(this->port, this->pin);
       return OFF;
     }
     else
     {
       // Initial state was off - so go to on
-      this->ledOn(this->port, this->pin);
+      gpio_setPinHigh(this->port, this->pin);
       return ON;
     }
   }
@@ -148,31 +156,33 @@ uint8_t LedModule::delay()
 // All states common behaviour
 uint8_t LedModule::common()
 {
-  this->inputEvent = false;  // clear flag
+  LedEvent* event = (LedEvent*) &this->event;
+
+  this->eventInputFlag = false;  // clear flag
 
   if(this->event.action == LedEvent::ACTION_ON)
   {
-    this->ledOn(this->port, this->pin);
+    gpio_setPinHigh(this->port, this->pin);
     return ON;
   }
   else if(this->event.action == LedEvent::ACTION_OFF)
   {
-    this->ledOff(this->port, this->pin);
+    gpio_setPinLow(this->port, this->pin);
     return OFF;
   }
   else if(this->event.action == LedEvent::ACTION_FLASH)
   {
-    if(this->event.flashDelayPeriods > 0)
+    if(event->flashDelayPeriods > 0)
     {
       // Delay period before standard flashing cycles
 
-      if(this->event.flashInitialOn == true)
+      if(event->flashInitialOn == true)
       {
-        this->ledOn(this->port, this->pin);
+        gpio_setPinHigh(this->port, this->pin);
       }
       else
       {
-        this->ledOff(this->port, this->pin);
+        gpio_setPinLow(this->port, this->pin);
       }
 
       this->periodCount = 0;
@@ -182,15 +192,15 @@ uint8_t LedModule::common()
     {
       // NO delay - so go straight to the initial state
 
-      if(this->event.flashInitialOn == true)
+      if(event->flashInitialOn == true)
       {
-        this->ledOn(this->port, this->pin);
+        gpio_setPinHigh(this->port, this->pin);
         this->periodCount = 0;
         return ON;
       }
       else
       {
-        this->ledOff(this->port, this->pin);
+        gpio_setPinLow(this->port, this->pin);
         this->periodCount = 0;
         return OFF;
       }
