@@ -22,8 +22,8 @@
 
 using namespace ArdMod;
 
-LedModule::LedModule(uint8_t port, uint8_t pin)
-: EventConsumer(), port(port), pin(pin)
+LedModule::LedModule(uint8_t port, uint8_t pin, Event* event)
+: port(port), pin(pin), EventConsumer(event)
 {
   //this->inputEvent = false;
   this->periodCount = 0;
@@ -52,7 +52,7 @@ void LedModule::run()
 // On state
 uint8_t LedModule::on()
 {
-  LedEvent* event = (LedEvent*) &this->event;
+  LedEvent* event = (LedEvent*) this->inputEvent;
 
   uint8_t newState = this->common();
   if(newState > 0)
@@ -61,7 +61,7 @@ uint8_t LedModule::on()
   }
   else{ /* No new state from input event - so do nothing */ }
 
-  if(this->event.action == LedEvent::ACTION_FLASH)
+  if(event->action == LedEvent::ACTION_FLASH)
   {
     // Handle flash mode - is it time to change state ?
 
@@ -85,7 +85,7 @@ uint8_t LedModule::on()
 // Off state
 uint8_t LedModule::off()
 {
-  LedEvent* event = (LedEvent*) &this->event;
+  LedEvent* event = (LedEvent*) this->inputEvent;
 
   uint8_t newState = this->common();
   if(newState > 0)
@@ -94,7 +94,7 @@ uint8_t LedModule::off()
   }
   else{ /* No new state from input event - so do nothing */ }
 
-  if(this->event.action == LedEvent::ACTION_FLASH)
+  if(event->action == LedEvent::ACTION_FLASH)
   {
     // Handle flash mode - is it time to change state ?
 
@@ -118,7 +118,7 @@ uint8_t LedModule::off()
 // Delay state
 uint8_t LedModule::delay()
 {
-  LedEvent* event = (LedEvent*) &this->event;
+  LedEvent* event = (LedEvent*) this->inputEvent;
 
   uint8_t newState = this->common();
   if(newState > 0)
@@ -156,21 +156,28 @@ uint8_t LedModule::delay()
 // All states common behaviour
 uint8_t LedModule::common()
 {
-  LedEvent* event = (LedEvent*) &this->event;
+  LedEvent* event = (LedEvent*) this->inputEvent;
+
+  if(this->eventInputFlag)
+  {
+    // No new input event
+    this->eventInputFlag = false;  // clear flag
+    return 0;
+  }
 
   this->eventInputFlag = false;  // clear flag
 
-  if(this->event.action == LedEvent::ACTION_ON)
+  if(event->action == LedEvent::ACTION_ON)
   {
     gpio_setPinHigh(this->port, this->pin);
     return ON;
   }
-  else if(this->event.action == LedEvent::ACTION_OFF)
+  else if(event->action == LedEvent::ACTION_OFF)
   {
     gpio_setPinLow(this->port, this->pin);
     return OFF;
   }
-  else if(this->event.action == LedEvent::ACTION_FLASH)
+  else if(event->action == LedEvent::ACTION_FLASH)
   {
     if(event->flashDelayPeriods > 0)
     {

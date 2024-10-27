@@ -43,14 +43,14 @@ void Event::copy(Event* copyEvent)
 
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
-EventProducer::EventProducer()
+EventProducer::EventProducer(Event* event): outpuEvent(event)
 {
   this->eventOutputFlag = false;
 }
 
 Event* EventProducer::getEventPtr()
 {
-  return &this->event;
+  return this->outpuEvent;
 }
 
 bool EventProducer::hasEvent()
@@ -62,15 +62,15 @@ bool EventProducer::hasEvent()
 
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
-EventConsumer::EventConsumer()
+EventConsumer::EventConsumer(Event* event): inputEvent(event)
 {
   this->eventInputFlag = false;
 }
 
-void EventConsumer::setEvent(Event* inputEvent)
+void EventConsumer::setEvent(Event* event)
 {
   this->eventInputFlag = true;
-  inputEvent->copy(&this->event);
+  event->copy(this->inputEvent);
 }
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------

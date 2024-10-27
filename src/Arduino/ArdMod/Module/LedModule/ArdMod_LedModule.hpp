@@ -28,7 +28,7 @@ namespace LedModule_defs
 class LedModule : public EventConsumer , public StateMachine, public DebugUser
 {
   public:
-    LedModule(uint8_t port, uint8_t pin);
+    LedModule(uint8_t port, uint8_t pin, Event* event);
     //void setEvent(LedEvent& event);
     void run();
 

@@ -36,9 +36,9 @@ public:
 class EventProducer{
 protected:
   bool eventOutputFlag;
-  Event event;
+  Event* outpuEvent;
 public:
-  EventProducer();
+  EventProducer(Event* event);
   virtual Event* getEventPtr();
   virtual bool hasEvent();
 };
@@ -46,10 +46,10 @@ public:
 class EventConsumer{
 protected:
   bool eventInputFlag;
-  Event event;
+  Event* inputEvent;
 public:
-  EventConsumer();
-  virtual void setEvent(Event* inputEvent);
+  EventConsumer(Event* event);
+  virtual void setEvent(Event* event);
 };
 
 }
