@@ -215,7 +215,7 @@ uint8_t LedModule::common()
   }
   else
   {
-    // No input event - so do nothing
+    // Invalid event action - so do nothing
     return 0;
   }
 }

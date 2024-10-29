@@ -30,13 +30,47 @@ void gpio_setPinDirection(uint8_t port, uint8_t pin, uint8_t direction)
   // Validation
   uint8_t* portReg = validatePortPin(port, pin);
 
-  if(portReg != NULL)
+  if(direction == GPIO_PIN_DIRECTION__IN)
   {
-
+      if(portReg != NULL)
+      {
+        if(port == GPIO_REG__PORTB)
+          {
+            DDRB &= invBitMask[pin];
+          }
+          else if(port == GPIO_REG__PORTC)
+          {
+            DDRC &= invBitMask[pin];
+          }
+          else if(port == GPIO_REG__PORTD)
+          {
+            DDRD &= invBitMask[pin];
+          }
+      }
+      else{ /* do nothing */ }
   }
-  else{ /* do nothing */ }
+  else if(direction == GPIO_PIN_DIRECTION__OUT)
+  {
+    if(portReg != NULL)
+      {
+        if(port == GPIO_REG__PORTB)
+          {
+            DDRB |= bitMask[pin];
+          }
+          else if(port == GPIO_REG__PORTC)
+          {
+            DDRC |= bitMask[pin];
+          }
+          else if(port == GPIO_REG__PORTD)
+          {
+            DDRD |= bitMask[pin];
+          }
+      }
+      else{ /* do nothing */ }
+  }
+  else{ /* Invalid direction - do nothing */ }
 
-  // Unfinnished !
+
 }
 //--------------------------------------------------------------------------------
 void gpio_setPinHigh(uint8_t port, uint8_t pin)
@@ -45,7 +79,7 @@ void gpio_setPinHigh(uint8_t port, uint8_t pin)
 
     if(portReg != NULL)
     {
-      (*portReg) |= bitMask[pin];;
+      (*portReg) |= bitMask[pin];
     }
     else{ /* do nothing */ }
 
@@ -69,9 +103,33 @@ void gpio_setPinLow(uint8_t port, uint8_t pin)
 
 #if defined(ENV_CONFIG__SYSTEM_PC)
     char s[12] = {0};
-    getPinSetDebugStr(port, pin, true, s);
+    getPinSetDebugStr(port, pin, false, s);
     debugWrite(s, Gpio);
 #endif
+}
+//--------------------------------------------------------------------------------
+bool gpio_getPinState(uint8_t port, uint8_t pin)
+{
+  uint8_t* portReg = validatePortPin(port, pin);
+
+  if(portReg != NULL)
+  {
+    if(port == GPIO_REG__PORTB)
+    {
+      if((PINB) & bitMask[pin]){ return true; } else{ return false; }
+    }
+    else if(port == GPIO_REG__PORTC)
+    {
+      if((PINC) & bitMask[pin]){ return true; } else{ return false; }
+    }
+    else if(port == GPIO_REG__PORTD)
+    {
+      if((PIND) & bitMask[pin]){ return true; } else{ return false; }
+    }
+  }
+  else{ /* do nothing */ }
+
+  return false;
 }
 //--------------------------------------------------------------------------------
 void gpio_setDebugOn(bool on)
