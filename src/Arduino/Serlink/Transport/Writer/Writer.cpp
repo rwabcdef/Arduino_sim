@@ -48,6 +48,7 @@ uint8_t Writer::sendFrame(Frame& frame)
 {
   this->txFlag = true;
   frame.copy(&this->txFrame);
+  this->status = Writer::STATUS_BUSY;
   return 0;
 }
 
@@ -55,7 +56,14 @@ uint8_t Writer::sendFrame(Frame& frame)
 uint8_t Writer::getStatus()
 {
   uint8_t status = this->status;
-  this->status = Writer::STATUS_IDLE; // clear status
+  if(this->status = Writer::STATUS_BUSY)
+  {
+    // writer is still busy - do nothing, i.e. don't clear status
+  }
+  else
+  {
+    this->status = Writer::STATUS_IDLE; // clear status
+  }
   return status;
 }
 
@@ -90,7 +98,7 @@ uint8_t Writer::idle()
     uint8_t ret;
     this->txFrame.toString((char*)this->txBuffer, &ret);
 
-    this->status = Writer::STATUS_BUSY;
+    //this->status = Writer::STATUS_BUSY;
 
     this->uartWrite((char*)this->txBuffer);
 
@@ -145,7 +153,7 @@ uint8_t Writer::rxAckWait()
     }
   }
 
-  if(swTimer_tickCheckTimeout(&this->startTick, 2000))
+  if(swTimer_tickCheckTimeout(&this->startTick, 1000))
   {
     this->status = Writer::STATUS_TIMEOUT;
     //printf("timeout\n");

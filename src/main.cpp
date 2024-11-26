@@ -117,8 +117,8 @@ int main(int argc, char const *argv[])
 	  //SocketTests::TxThenAck1();
 	  //SocketTests::RxThenStdAck();
 	  //SocketTests::RxThenPiggyBackAck();
-	  //TransportTests::TxThenAck1();
-	  TransportTests::RxThenStdAck();
+	  TransportTests::TxThenAck1();
+	  //TransportTests::RxThenStdAck();
 	  //SerLink::UtilsTests::uint16ToStr();
 	  //SerLink::UtilsTests::strToUint8();
 	  //printf("nothing\n");
