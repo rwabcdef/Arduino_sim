@@ -30,7 +30,9 @@ private:
   volatile bool ackRxFlag;
   //char txBuffer[UART_BUFF_LEN];
   char* txBuffer;
+#if defined(ENV_CONFIG__SYSTEM_PC)
   char s[64];
+#endif
   uint8_t status;
   uint8_t bufferLen;
   Frame txFrame;

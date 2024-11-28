@@ -12,12 +12,12 @@
 // System (i.e. run time) type - ONLY ONE should be defined
 
 #define ENV_CONFIG__SYSTEM_PC 0               // Code is run in eclipse on a PC
-//#define ENV_CONFIG__SYSTEM_ARDUINO_UNO 1    // Code is run on an Arduino Uno
+//#define ENV_CONFIG__SYSTEM_ARDUINO_UNO_R3 1    // Code is run on an Arduino Uno R3
 //----------------------------------------------------
 
-#define ENV_CONFIG__SYSTEM ENV_CONFIG__SYSTEM_ARDUINO_UNO
+#define ENV_CONFIG__SYSTEM ENV_CONFIG__SYSTEM_ARDUINO_UNO_R3
 
-#if defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO)
+#if defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO_R3)
 #include <avr/io.h>
 #include "wiring_private.h"
 #endif

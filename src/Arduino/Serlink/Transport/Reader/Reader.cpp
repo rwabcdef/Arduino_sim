@@ -167,8 +167,8 @@ uint8_t Reader::idle()
 			  {
 			    // do not use data length and data in ack frame that was set by the instantHandler
 			    this->ackFrame.type = Frame::TYPE_ACK;
-				this->ackFrame.dataLen = Frame::ACK_OK;
-				memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
+				  this->ackFrame.dataLen = Frame::ACK_OK;
+				  memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
 			  }
 			  else
 			  {
@@ -182,11 +182,13 @@ uint8_t Reader::idle()
 //			  volatile int n = i * 7;
 //			}
 
+#if defined(ENV_CONFIG__SYSTEM_PC)
 			if(this->debugOn)
 			{
 				sprintf(this->s, "uart rx: %s", this->rxBuffer);
 				this->debugWrite(this->s);
 			}
+#endif
 
 			sei();
 			//return IDLE;
@@ -242,11 +244,13 @@ uint8_t Reader::ackDelay()
 		//char ackBuffer[64] = {0};
 		//sprintf(ackBuffer, "TestAck\n", 0);
 
+#if defined(ENV_CONFIG__SYSTEM_PC)
 		if(this->debugOn)
 		{
 			sprintf(this->s, "ack frame: %s\n\0", this->ackBuffer);
 			this->debugWrite(this->s);
 		}
+#endif
 
 		this->uartWrite((char*)this->ackBuffer);
 		//this->write((char*)"hello\n\0");
@@ -260,11 +264,13 @@ uint8_t Reader::txAckWait()
 {
 	if(!this->getUartTxBusy())
 	{
+#if defined(ENV_CONFIG__SYSTEM_PC)
 		if(this->debugOn)
 		{
 			sprintf(this->s, "Reader::txAckWait() done\n\0", 0);
 			this->debugWrite(this->s);
 		}
+#endif
 
 		swTimer_tickReset(&this->startTick);
 		return RXDELAY;

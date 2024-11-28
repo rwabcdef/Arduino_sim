@@ -58,7 +58,9 @@ private:
 	//DebugPrint* debugPrinter;
 	//char rxBuffer[UART_BUFF_LEN];
 	//char ackBuffer[UART_BUFF_LEN];
+#if defined(ENV_CONFIG__SYSTEM_PC)
 	char s[64];
+#endif
 	Frame rxFrame;
 	Frame ackFrame;
 	HandlerRegistration handlerRegistrations[READER_CONFIG__MAX_NUM_INSTANT_HANDLERS];

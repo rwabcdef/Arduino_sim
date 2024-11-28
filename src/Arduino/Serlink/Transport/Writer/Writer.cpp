@@ -124,8 +124,10 @@ uint8_t Writer::txWait()
     }
     else
     {
+#if defined(ENV_CONFIG__SYSTEM_PC)
       //sprintf(this->s, "writer ack wait", 0);
       //this->debugWrite(this->s);
+#endif
 
       swTimer_tickReset(&this->startTick);
       return RXACKWAIT;
@@ -138,8 +140,10 @@ uint8_t Writer::rxAckWait()
   {
     this->ackRxFlag = false;
 
+#if defined(ENV_CONFIG__SYSTEM_PC)
     sprintf(this->s, "writer rx ack", 0);
     this->debugWrite(this->s);
+#endif
 
     if(0 == strncmp(this->ackRxFrame.protocol, this->txFrame.protocol, Frame::LEN_PROTOCOL))
     {

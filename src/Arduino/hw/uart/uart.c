@@ -1,5 +1,5 @@
 #include "uart.h"
-#if defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO)
+#if defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO_R3)
 //#include <avr/io.h>
 //#include "wiring_private.h"
 #endif

@@ -15,7 +15,7 @@
 #include<stdbool.h>
 #include<ATmega328.hpp>
 
-#else
+#elif defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO_R3)
 #include <Arduino.h>
 
 #endif
