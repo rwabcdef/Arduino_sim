@@ -386,11 +386,11 @@ void SocketTests::RxThenPiggyBackAck()
   uint8_t retCode;
   char rxFrameBuffer[UART_BUFF_LEN];
 
-  SerLink::Frame* rxFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION,
-      615, rxFrameBuffer, 6, "hello\n");
+  SerLink::Frame* rxFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_TRANSMISSION,
+      615, rxFrameBuffer, 6, "abcdef");
 
 
-  reader0.registerInstantCallback("TST05", testReadHandler);
+  reader0.registerInstantCallback("TST04", testReadHandler);
 
   writer0.debugOn = true;
   reader0.init();  // Initialises uart hardware & buffers
