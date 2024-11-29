@@ -37,10 +37,11 @@ public:
 	char type;
 	uint16_t rollCode;
 	uint16_t dataLen;
-	char data[MAX_DATALEN];
+	//char data[MAX_DATALEN];
+	char* buffer;
 
-  Frame();
-  Frame(char* pProtocol, char type, uint16_t rollCode, uint16_t dataLen, char* pData);
+  Frame(char* pBuffer);
+  Frame(char* pProtocol, char type, uint16_t rollCode, char* pBuffer, uint16_t dataLen, char* pData);
   void setProtocol(char* pProtocol);
   void toString(char* const pStr, uint8_t* pRetCode);
   void copy(Frame* copy);

@@ -66,7 +66,7 @@ void run1(){ BasicHwTests::test1(); }
 
 int main(int argc, char const *argv[])
 {
-	printf("Main Start 2\n");
+	printf("Main Start 1\n");
 
 	//initDebug();
 //	initRun(5000);
@@ -116,8 +116,8 @@ int main(int argc, char const *argv[])
 	  //WriterTests::ackTest1();
 	  //SocketTests::TxThenAck1();
 	  //SocketTests::RxThenStdAck();
-	  //SocketTests::RxThenPiggyBackAck();
-	  TransportTests::TxThenAck1();
+	  SocketTests::RxThenPiggyBackAck();
+	  //TransportTests::TxThenAck1();
 	  //TransportTests::RxThenStdAck();
 	  //SerLink::UtilsTests::uint16ToStr();
 	  //SerLink::UtilsTests::strToUint8();

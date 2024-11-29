@@ -44,15 +44,53 @@ static char readerRxBuffer[UART_BUFF_LEN];
 static char readerAckBuffer[UART_BUFF_LEN];
 static char writerTxBuffer[UART_BUFF_LEN];
 
+static char rxFrameBuffer[UART_BUFF_LEN];
+
 static char uartTxFrame[128] = {0};
 static uint8_t uartTxCharIndex = 0;
 
+//-----------------------------------------------------------------------
 // These objects MUST be global to avoid a stack overflow.
-static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer, UART_BUFF_LEN);
-static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN, &writer0);
-static SerLink::Transport transport0(&reader0, &writer0);
+
+//-----------------------
+// reader0 & writer0
+static char writerTxFrameBuffer[UART_BUFF_LEN];
+static char writerAckFrameBuffer[UART_BUFF_LEN];
+static SerLink::Frame writerTxFrame(writerTxFrameBuffer);
+static SerLink::Frame writerAckFrame(writerAckFrameBuffer);
+
+static char readerRxFrameBuffer[UART_BUFF_LEN];
+static char readerAckFrameBuffer[UART_BUFF_LEN];
+static SerLink::Frame readerRxFrame(readerRxFrameBuffer);
+static SerLink::Frame readerAckFrame(readerAckFrameBuffer);
+
+static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer,
+    UART_BUFF_LEN, &writerTxFrame, &writerAckFrame);
+
+static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer,
+    UART_BUFF_LEN, &readerRxFrame, &readerAckFrame, &writer0);
+
 static InterruptSchedule* pUartRxInterrupt;
-static SerLink::Frame rxFrameFromReader0;  // received frame from reader0
+//static SerLink::Frame rxFrameFromReader0;  // received frame from reader0
+
+//-----------------------
+// socket0
+static char socket0RxFrameBuffer[UART_BUFF_LEN];
+static char socket0TxFrameBuffer[UART_BUFF_LEN];
+
+static SerLink::Frame socket0RxFrame(socket0RxFrameBuffer);
+static SerLink::Frame socket0TxFrame(socket0TxFrameBuffer);
+//-----------------------
+// transport0
+
+static char transport0RxFrameBuffer[UART_BUFF_LEN];
+static char transport0TxFrameBuffer[UART_BUFF_LEN];
+
+static SerLink::Frame transport0RxFrame(transport0RxFrameBuffer);
+static SerLink::Frame transport0TxFrame(transport0TxFrameBuffer);
+
+static SerLink::Transport transport0(&reader0, &writer0, &transport0RxFrame, &transport0TxFrame);
+//-----------------------
 
 static void Set_UDRIE0_CallBack();
 static void Clr_UDRIE0_CallBack();
@@ -160,9 +198,10 @@ void TransportTests::TxThenAck1()
   uint64_t current = 0;
   bool txFrameSent = false;
   SerLink::Socket* socket0;
+  char ackFrameBuffer[UART_BUFF_LEN];
 
   // Ack frame that is received (i.e. from simulated remote device).
-  static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, SerLink::Frame::ACK_OK, "");
+  static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, ackFrameBuffer, SerLink::Frame::ACK_OK, "");
 
   writer0.debugOn = true;
   reader0.init();  // Initialises uart hardware & buffers
@@ -173,7 +212,7 @@ void TransportTests::TxThenAck1()
   setSet_UDRIE0_CallBack(&Set_UDRIE0_CallBack);
   setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
 
-  socket0 = transport0.acquireSocket("TST04", 615);
+  socket0 = transport0.acquireSocket("TST04", &socket0RxFrame, &socket0TxFrame, 615);
   if(nullptr == socket0)
   {
 	  debugPrint->writeLine("socket NOT acquired", DebugPrint_defs::Zero);
@@ -263,10 +302,11 @@ void TransportTests::RxThenStdAck()
   uint8_t sockRxDataLen;
   char sockRxData[SOCK_DATA_MAX_LEN];
 
-  // Frame that is initially received
-  static SerLink::Frame rxFrame("TST05", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
 
-  writer0.debugOn = true;
+  // Frame that is initially received
+  static SerLink::Frame rxFrame("TST05", SerLink::Frame::TYPE_TRANSMISSION, 615, rxFrameBuffer, 5, "hello");
+
+  writer0.debugOn = false; //true;
   reader0.init();  // Initialises uart hardware & buffers
   reader0.debugOn = true;
 
@@ -282,7 +322,7 @@ void TransportTests::RxThenStdAck()
   setClr_UDRIE0_CallBack(&Clr_UDRIE0_CallBack);
 
   // Acquire a socket from the transport layer
-  socket0 = transport0.acquireSocket("TST05", 245);
+  socket0 = transport0.acquireSocket("TST05", &socket0RxFrame, &socket0TxFrame, 245);
   if(nullptr == socket0)
   {
 	  debugPrint->writeLine("socket NOT acquired", DebugPrint_defs::Zero);
@@ -296,6 +336,8 @@ void TransportTests::RxThenStdAck()
 
   do
   {
+    transport0.run();
+    /*
     current = simClk->getCurrent();
     if(4000 == current)
     //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
@@ -303,7 +345,7 @@ void TransportTests::RxThenStdAck()
       debugPrint->writeLine("pA", DebugPrint_defs::Zero);
     }
 
-    transport0.run();
+
 
     if(socket0->getRxData(sockRxData, &sockRxDataLen))
     {
@@ -318,6 +360,7 @@ void TransportTests::RxThenStdAck()
       //printf("at 30000\n");
       debugPrint->writeLine("at 30000", DebugPrint_defs::Zero);
     }
+    */
 
   }while(!simClk->getDone());
 

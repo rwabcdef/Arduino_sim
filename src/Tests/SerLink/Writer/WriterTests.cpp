@@ -129,8 +129,23 @@ static void uartRxHandler(void* pData)
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 // These objects MUST be global to avoid a stack overflow.
-static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer, UART_BUFF_LEN);
-static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN, &writer0);
+
+static char writerTxFrameBuffer[UART_BUFF_LEN];
+static char writerAckFrameBuffer[UART_BUFF_LEN];
+static SerLink::Frame writerTxFrame(writerTxFrameBuffer);
+static SerLink::Frame writerAckFrame(writerAckFrameBuffer);
+
+static char readerRxFrameBuffer[UART_BUFF_LEN];
+static char readerAckFrameBuffer[UART_BUFF_LEN];
+static SerLink::Frame readerRxFrame(readerRxFrameBuffer);
+static SerLink::Frame readerAckFrame(readerAckFrameBuffer);
+
+static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer,
+    UART_BUFF_LEN, &writerTxFrame, &writerAckFrame);
+
+static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer,
+    UART_BUFF_LEN, &readerRxFrame, &readerAckFrame, &writer0);
+
 static InterruptSchedule* pUartRxInterrupt;
 
 void WriterTests::ackTest1()
@@ -144,11 +159,13 @@ void WriterTests::ackTest1()
   char ackBuffer[32];
   uint64_t current = 0;
   bool txFrameSent = false;
+  char txFrameBuffer[UART_BUFF_LEN];
+  char ackFrameBuffer[UART_BUFF_LEN];
 
   //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
-  static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, 5, "hello");
+  static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, txFrameBuffer, 5, "hello");
 
-  static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, SerLink::Frame::ACK_OK, "");
+  static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, ackFrameBuffer, SerLink::Frame::ACK_OK, "");
 
   //uint8_t retCode;
   //txFrame.toString(ackBuffer, &retCode);
@@ -192,7 +209,7 @@ void WriterTests::ackTest1()
 
       //sprintf(uartTxFrame, "hello\n", 0);
       //uart_write(uartTxFrame);
-      writer0.sendFrame(txFrame);
+      writer0.sendFrame(&txFrame);
       txFrameSent = true;
 
       uint8_t retCode;

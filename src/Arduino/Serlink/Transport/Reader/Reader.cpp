@@ -26,15 +26,16 @@
 using namespace SerLink;
 
 
-Reader::Reader(uint8_t id, char* rxBuffer, char* ackBuffer, uint8_t bufferLen, Writer* writer) : id(id), writer(writer), DebugUser()
+Reader::Reader(uint8_t id, char* rxBuffer, char* ackBuffer, uint8_t bufferLen,
+    Frame* rxFrame, Frame* ackFrame, Writer* writer) : id(id), writer(writer), DebugUser()
 {
 	//this->id = id;
 	this->rxFlag = false;
 	this->rxBuffer = rxBuffer;
 	this->ackBuffer = ackBuffer;
   this->bufferLen = bufferLen;
-	//this->bufferLen = UART_BUFF_LEN;
-	//this->debugPrinter = debugPrint;
+	this->rxFrame = rxFrame;
+	this->ackFrame = ackFrame;
 	this->currentState = IDLE;
   #if defined(ENV_CONFIG__SYSTEM_PC)
 	this->debugLevel = DebugPrint_defs::UartRx;
@@ -113,13 +114,13 @@ readHandler Reader::getInstantHandler(char* protocol)
   return nullptr;
 }
 
-bool Reader::getRxFrame(Frame& rxFrame)
+bool Reader::getRxFrame(Frame* rxFrame)
 {
   if(this->rxFlag)
   {
     this->rxFlag = false;
 
-    this->rxFrame.copy(&rxFrame);
+    this->rxFrame->copy(rxFrame);
 
     return true;
   }
@@ -140,18 +141,18 @@ uint8_t Reader::idle()
 		uint8_t rxLen = this->getUartRxLenAndReset();
 
 		// Read frame from uart.
-		Frame::fromString((char*) this->rxBuffer, &this->rxFrame);
+		Frame::fromString((char*) this->rxBuffer, this->rxFrame);
 
 		//this->rxFlag = true;
 
-		if(this->rxFrame.type == Frame::TYPE_TRANSMISSION)
+		if(this->rxFrame->type == Frame::TYPE_TRANSMISSION)
 		{
-			this->rxFrame.copy(&this->ackFrame);
-			this->ackFrame.type = Frame::TYPE_ACK;
-			this->ackFrame.dataLen = Frame::ACK_OK;
-			memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
+			this->rxFrame->copy(this->ackFrame);
+			this->ackFrame->type = Frame::TYPE_ACK;
+			this->ackFrame->dataLen = Frame::ACK_OK;
+			memset(this->ackFrame->buffer, 0, Frame::MAX_DATALEN);
 
-			readHandler instantHandler = this->getInstantHandler(this->rxFrame.protocol);
+			readHandler instantHandler = this->getInstantHandler(this->rxFrame->protocol);
 			if(instantHandler == nullptr)
 			{
 			  // No instant (i.e. piggyback) handler has been found - so do nothing.
@@ -161,14 +162,14 @@ uint8_t Reader::idle()
 			  // An instant (i.e. piggyback) handler has been found for this protocol,
 			  // so call it now.
 			  // The instant handler callback sets the ackFrame's data & dataLen.
-			  bool useReturn = instantHandler(this->rxFrame, &this->ackFrame.dataLen, this->ackFrame.data);
+			  bool useReturn = instantHandler(*this->rxFrame, &this->ackFrame->dataLen, this->ackFrame->buffer);
 
 			  if(!useReturn)
 			  {
 			    // do not use data length and data in ack frame that was set by the instantHandler
-			    this->ackFrame.type = Frame::TYPE_ACK;
-				  this->ackFrame.dataLen = Frame::ACK_OK;
-				  memset(&this->ackFrame.data, 0, Frame::MAX_DATALEN);
+			    this->ackFrame->type = Frame::TYPE_ACK;
+				  this->ackFrame->dataLen = Frame::ACK_OK;
+				  memset(this->ackFrame->buffer, 0, Frame::MAX_DATALEN);
 			  }
 			  else
 			  {
@@ -194,7 +195,7 @@ uint8_t Reader::idle()
 			//return IDLE;
 			return ACKDELAY;
 		}
-		else if(this->rxFrame.type == Frame::TYPE_UNIDIRECTION)
+		else if(this->rxFrame->type == Frame::TYPE_UNIDIRECTION)
 		{
 		  // Received Frame is unidirectional - so do nothing
 
@@ -202,7 +203,7 @@ uint8_t Reader::idle()
           sei();
           return RXDELAY;
 		}
-		else if(this->rxFrame.type == Frame::TYPE_ACK)
+		else if(this->rxFrame->type == Frame::TYPE_ACK)
 		{
       // Received Frame is an ack frame
 
@@ -240,7 +241,7 @@ uint8_t Reader::ackDelay()
 		memset((char*)this->ackBuffer, 0, this->bufferLen);
 		uint8_t ret;
 		//this->ackFrame.toString((char*)this->ackBuffer, &ret);
-		this->ackFrame.toString((char*)this->ackBuffer, &ret);
+		this->ackFrame->toString((char*)this->ackBuffer, &ret);
 		//char ackBuffer[64] = {0};
 		//sprintf(ackBuffer, "TestAck\n", 0);
 

@@ -29,7 +29,8 @@ private:
   bool rxFlag;
   uint8_t txStatus;
   readHandler instantReadHandler;
-  Frame rxFrame, txFrame;
+  Frame *rxFrame;
+  Frame* txFrame;
   char protocol[Frame::LEN_PROTOCOL];
   uint16_t txRollCode;
 
@@ -40,7 +41,7 @@ public:
   //Socket(Writer* writer, Reader* reader);
   Socket();
   bool getActive(){ return this->active; };
-  void init(char* protocol, readHandler instantReadHandler, uint16_t startRollCode = 0);
+  void init(char* protocol, Frame *rxFrame, Frame* txFrame, readHandler instantReadHandler, uint16_t startRollCode = 0);
 
   //-------------------------------------------
   // Upper (i.e. application) Interface
@@ -62,13 +63,13 @@ public:
   char* getProtocol(){ return &this->protocol[0]; };
 
   // Called by transport layer, to see if there is a frame to be sent from this Socket.
-  bool getTxFrame(Frame& txFrame);
+  bool getTxFrame(Frame* txFrame);
 
   // Called by transport layer when writer has finished sending frame
   void setWriterDoneStatus(uint8_t status);
 
   // Called by transport layer when reader has a frame for this Socket.
-  void setRxFrame(Frame& rxFrame);
+  void setRxFrame(Frame* rxFrame);
   //-------------------------------------------
 };
 

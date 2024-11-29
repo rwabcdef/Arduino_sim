@@ -61,8 +61,8 @@ private:
 #if defined(ENV_CONFIG__SYSTEM_PC)
 	char s[64];
 #endif
-	Frame rxFrame;
-	Frame ackFrame;
+	Frame* rxFrame;
+	Frame* ackFrame;
 	HandlerRegistration handlerRegistrations[READER_CONFIG__MAX_NUM_INSTANT_HANDLERS];
 	uint8_t numInstantHandlers;
 
@@ -89,11 +89,12 @@ private:
 	readHandler getInstantHandler(char* protocol);
 
 public:
-	Reader(uint8_t id, char* rxBuffer, char* ackBuffer, uint8_t bufferLen, Writer* writer = nullptr); // , DebugPrint* debugPrint = nullptr
+	Reader(uint8_t id, char* rxBuffer, char* ackBuffer, uint8_t bufferLen,
+	    Frame* rxFrame, Frame* ackFrame, Writer* writer = nullptr); // , DebugPrint* debugPrint = nullptr
   void init();
 	void run();
 	bool registerInstantCallback(char* protocol, readHandler handler);
-	bool getRxFrame(Frame& rxFrame);
+	bool getRxFrame(Frame* rxFrame);
 
 	uint8_t getCurrentState();
 	char* getCurrentStateName();

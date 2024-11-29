@@ -15,13 +15,16 @@ SerLink::Socket::Socket()
   this->active = false;
 }
 
-void SerLink::Socket::init(char* protocol, readHandler instantReadHandler, uint16_t startRollCode)
+void SerLink::Socket::init(char* protocol, Frame *rxFrame, Frame* txFrame,
+    readHandler instantReadHandler, uint16_t startRollCode)
 {
   this->active = true;
   this->txFlag = false;
   this->rxFlag = false;
   //this->txBusy = false;
   this->txStatus = TX_STATUS_IDLE;
+  this->rxFrame = rxFrame;
+  this->txFrame = txFrame;
   strncpy(this->protocol, protocol, Frame::LEN_PROTOCOL);
   //this->instantReadHandler = instantReadHandler;
   this->txRollCode = startRollCode;
@@ -35,8 +38,8 @@ bool SerLink::Socket::getRxData(char* data, uint8_t* dataLen)
   if(this->rxFlag)
   {
     this->rxFlag = false;
-    *dataLen = this->rxFrame.dataLen;
-    strncpy(data, this->rxFrame.data, this->rxFrame.dataLen);
+    *dataLen = this->rxFrame->dataLen;
+    strncpy(data, this->rxFrame->buffer, this->rxFrame->dataLen);
     return true;
   }
   return false;
@@ -60,19 +63,19 @@ bool SerLink::Socket::sendData(char* data, uint16_t dataLen, bool ack)
     this->txFlag = true;
     this->txStatus = TX_STATUS_BUSY;
 
-    this->txFrame.setProtocol(this->protocol);
+    this->txFrame->setProtocol(this->protocol);
     if(ack)
     {
-      this->txFrame.type = Frame::TYPE_TRANSMISSION;
+      this->txFrame->type = Frame::TYPE_TRANSMISSION;
     }
     else
     {
-      this->txFrame.type = Frame::TYPE_UNIDIRECTION;
+      this->txFrame->type = Frame::TYPE_UNIDIRECTION;
     }
-    this->txFrame.rollCode = this->txRollCode;
+    this->txFrame->rollCode = this->txRollCode;
     Frame::incRollCode(&this->txRollCode);
-    this->txFrame.dataLen = dataLen;
-    strncpy(this->txFrame.data, data, dataLen);
+    this->txFrame->dataLen = dataLen;
+    strncpy(this->txFrame->buffer, data, dataLen);
 
     return true;
   }
@@ -95,11 +98,11 @@ uint8_t SerLink::Socket::getAndClearSendStatus()
 //------------------------------------------------------------------------------
 // Lower (i.e. transport) Interface
 
-bool SerLink::Socket::getTxFrame(Frame& txFrame)
+bool SerLink::Socket::getTxFrame(Frame* txFrame)
 {
   if(this->txFlag)
   {
-    this->txFrame.copy(&txFrame);
+    this->txFrame->copy(txFrame);
     this->txFlag = false;         // clear tx flag
     //this->txBusy = true;
     return true;
@@ -123,7 +126,7 @@ void SerLink::Socket::setWriterDoneStatus(uint8_t status)
   }
 }
 
-void SerLink::Socket::setRxFrame(Frame& rxFrame)
+void SerLink::Socket::setRxFrame(Frame* rxFrame)
 {
   if(!this->active)
   {
@@ -131,6 +134,6 @@ void SerLink::Socket::setRxFrame(Frame& rxFrame)
   }
 
   this->rxFlag = true;
-  rxFrame.copy(&this->rxFrame);
+  rxFrame->copy(this->rxFrame);
 }
 //------------------------------------------------------------------------------

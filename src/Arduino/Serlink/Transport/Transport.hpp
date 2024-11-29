@@ -40,7 +40,8 @@ private:
 	//uint16_t txDataLen;
 	//char txData[UART_BUFF_LEN];
 
-	Frame rxFrame, txFrame;
+	Frame* rxFrame;
+	Frame* txFrame;
 
 	// State methods
 	uint8_t idle();
@@ -50,13 +51,13 @@ private:
 	void commonBehaviour();
 
 public:
-	Transport(Reader* reader, Writer* writer);
+	Transport(Reader* reader, Writer* writer, Frame* rxFrame, Frame* txFrame);
 	void run();
 
 #if defined(TRANSPORT_CONFIG__SOCKETS_ENABLED)
 
 	// Used to acquire a socket
-	Socket* acquireSocket(char* protocol,
+	Socket* acquireSocket(char* protocol, Frame* rxFrame, Frame* txFrame,
 		  uint16_t startRollCode = 0, readHandler instantReadHandler = nullptr);
 
   int8_t findSocketIndex(char* protocol);

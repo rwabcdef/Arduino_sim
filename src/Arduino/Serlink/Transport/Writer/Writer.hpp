@@ -35,8 +35,8 @@ private:
 #endif
   uint8_t status;
   uint8_t bufferLen;
-  Frame txFrame;
-  Frame ackRxFrame;
+  Frame* txFrame;
+  Frame* ackRxFrame;
 
   uint8_t flag;
 
@@ -52,18 +52,18 @@ public:
   static const uint8_t STATUS_TIMEOUT = 51;
   static const uint8_t STATUS_PROTOCOL_ERROR = 52;
 
-  Writer(uint8_t id, char* txBuffer, uint8_t bufferLen);
+  Writer(uint8_t id, char* txBuffer, uint8_t bufferLen, Frame* txFrame, Frame* ackRxFrame);
   void run();
 
   // Used to send frame
-  uint8_t sendFrame(Frame& frame);
+  uint8_t sendFrame(Frame* frame);
 
   uint8_t getStatus();
 
   void getStatusStr(char* str);
 
   // Called by a Reader to pass an ack frame to the Writer.
-  void setAckFrame(Frame& frame);
+  void setAckFrame(Frame* frame);
 
   uint8_t uartWrite(char* buffer);
   bool getUartTxBusy();

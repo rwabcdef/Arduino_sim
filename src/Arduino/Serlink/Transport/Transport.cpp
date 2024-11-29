@@ -15,14 +15,14 @@
 
 using namespace SerLink;
 
-Transport::Transport(Reader* reader, Writer* writer):
-reader(reader), writer(writer)
+Transport::Transport(Reader* reader, Writer* writer, Frame* rxFrame, Frame* txFrame):
+reader(reader), writer(writer), rxFrame(rxFrame), txFrame(txFrame)
 {
   this->socketCount = 0;
   this->currentState = IDLE;
 }
 
-Socket* Transport::acquireSocket(char* protocol,
+Socket* Transport::acquireSocket(char* protocol, Frame* rxFrame, Frame* txFrame,
 		  uint16_t startRollCode, readHandler instantReadHandler)
 {
   Socket* socket = nullptr;
@@ -34,7 +34,7 @@ Socket* Transport::acquireSocket(char* protocol,
     this->socketCount++;
 
     // Initialise socket
-    socket->init(protocol, instantReadHandler, startRollCode);
+    socket->init(protocol, rxFrame, txFrame, instantReadHandler, startRollCode);
 
     if(instantReadHandler == nullptr){ /* do nothing */}
     else
@@ -76,7 +76,7 @@ void Transport::commonBehaviour()
   if(this->reader->getRxFrame(this->rxFrame))
   {
     // A frame has been received
-    int8_t socketIndex = this->findSocketIndex(this->rxFrame.protocol);
+    int8_t socketIndex = this->findSocketIndex(this->rxFrame->protocol);
 
     if(socketIndex >= 0)
     {

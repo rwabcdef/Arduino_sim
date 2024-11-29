@@ -13,22 +13,24 @@ using namespace SerLink;
 
 static const char digits[10] = {'0','1','2','3','4','5','6','7','8','9'};
 
-Frame::Frame()
+Frame::Frame(char* pBuffer)
 {
 	strncpy(this->protocol, "00000", Frame::LEN_PROTOCOL);
 	this->type = '0';
 	this->rollCode = 0;
 	this->dataLen = 0;
-	memset(this->data, 0, Frame::MAX_DATALEN);
+	this->buffer = pBuffer;
+	//memset(this->data, 0, Frame::MAX_DATALEN);
 }
 
-Frame::Frame(char* pProtocol, char type, uint16_t rollCode, uint16_t dataLen, char* pData)
+Frame::Frame(char* pProtocol, char type, uint16_t rollCode, char* pBuffer, uint16_t dataLen, char* pData)
 {
 	strncpy(this->protocol, pProtocol, Frame::LEN_PROTOCOL);
 	this->type = type;
 	this->rollCode = rollCode;
 	this->dataLen = dataLen;
-	strncpy(this->data, pData, this->dataLen);
+	this->buffer = pBuffer;
+	strncpy(this->buffer, pData, this->dataLen);
 }
 
 void Frame::setProtocol(char* pProtocol)
@@ -59,7 +61,7 @@ void Frame::toString(char* const pStr, uint8_t* pRetCode)
 	if(this->dataLen < Frame::ACK_OK)
 	{
 	  // Copy data
-	  strncpy(&pStr[Frame::INDEX_START_DATA], this->data, this->dataLen);
+	  strncpy(&pStr[Frame::INDEX_START_DATA], this->buffer, this->dataLen);
 	}
 
 	pStr[eofIndex] = '\n';
@@ -74,7 +76,7 @@ void Frame::fromString(char* str, Frame* pFrame)
 
   if(pFrame->dataLen < Frame::ACK_OK)
   {
-    strncpy(pFrame->data, &str[Frame::INDEX_START_DATA], pFrame->dataLen);
+    strncpy(pFrame->buffer, &str[Frame::INDEX_START_DATA], pFrame->dataLen);
   }
 }
 
@@ -87,7 +89,7 @@ void Frame::copy(Frame* copy)
 
   if(this->dataLen < Frame::ACK_OK)
   {
-    strncpy(copy->data, this->data, this->dataLen);
+    strncpy(copy->buffer, this->buffer, this->dataLen);
   }
 }
 
@@ -148,5 +150,5 @@ void Frame::toDebugString(char* pStr)
 	index += sprintf(&pStr[index], "type: %c\n", this->type);
 	index += sprintf(&pStr[index], "rollCode: %d\n", this->rollCode);
 	index += sprintf(&pStr[index], "dataLen: %d\n", this->dataLen);
-	index += sprintf(&pStr[index], "data: %s\n", this->data);
+	index += sprintf(&pStr[index], "buffer: %s\n", this->buffer);
 }

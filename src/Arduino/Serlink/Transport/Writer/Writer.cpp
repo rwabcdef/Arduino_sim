@@ -19,12 +19,14 @@
 
 using namespace SerLink;
 
-Writer::Writer(uint8_t id, char* txBuffer, uint8_t bufferLen): id(id), DebugUser()
+Writer::Writer(uint8_t id, char* txBuffer, uint8_t bufferLen, Frame* txFrame, Frame* ackRxFrame): id(id), DebugUser()
 {
   this->txFlag = false;
   this->ackRxFlag = false;
   this->txBuffer = txBuffer;
   this->bufferLen = bufferLen;
+  this->txFrame = txFrame;
+  this->ackRxFrame = ackRxFrame;
   this->currentState = IDLE;
   #if defined (ENV_CONFIG__SYSTEM_PC)
   this->debugLevel = DebugPrint_defs::Writer0;
@@ -44,10 +46,10 @@ void Writer::run()
 }
 
 // Used to send frame (called from app layer above)
-uint8_t Writer::sendFrame(Frame& frame)
+uint8_t Writer::sendFrame(Frame* frame)
 {
   this->txFlag = true;
-  frame.copy(&this->txFrame);
+  frame->copy(this->txFrame);
   this->status = Writer::STATUS_BUSY;
   return 0;
 }
@@ -80,9 +82,9 @@ void Writer::getStatusStr(char* str)
 }
 
   // Called by a Reader to pass an ack frame to the Writer.
-void Writer::setAckFrame(Frame& frame)
+void Writer::setAckFrame(Frame* frame)
 {
-  frame.copy(&this->ackRxFrame);
+  frame->copy(this->ackRxFrame);
   this->ackRxFlag = true;
   //this->debugWrite("writer ack");
 }
@@ -96,7 +98,7 @@ uint8_t Writer::idle()
     this->txFlag = false;
 
     uint8_t ret;
-    this->txFrame.toString((char*)this->txBuffer, &ret);
+    this->txFrame->toString((char*)this->txBuffer, &ret);
 
     //this->status = Writer::STATUS_BUSY;
 
@@ -117,7 +119,7 @@ uint8_t Writer::txWait()
   {
     //return IDLE;
 
-    if(this->txFrame.type == Frame::TYPE_UNIDIRECTION)
+    if(this->txFrame->type == Frame::TYPE_UNIDIRECTION)
     {
       this->status = Writer::STATUS_IDLE;
       return IDLE;
@@ -145,7 +147,7 @@ uint8_t Writer::rxAckWait()
     this->debugWrite(this->s);
 #endif
 
-    if(0 == strncmp(this->ackRxFrame.protocol, this->txFrame.protocol, Frame::LEN_PROTOCOL))
+    if(0 == strncmp(this->ackRxFrame->protocol, this->txFrame->protocol, Frame::LEN_PROTOCOL))
     {
       this->status = Writer::STATUS_OK;
       return IDLE;

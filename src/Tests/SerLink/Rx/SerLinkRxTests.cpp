@@ -27,6 +27,23 @@
 char rxBuffer[UART_BUFF_LEN];
 char readerRxBuffer[UART_BUFF_LEN];
 char readerAckBuffer[UART_BUFF_LEN];
+static char writerTxBuffer[UART_BUFF_LEN];
+
+static char writerTxFrameBuffer[UART_BUFF_LEN];
+static char writerAckFrameBuffer[UART_BUFF_LEN];
+static SerLink::Frame writerTxFrame(writerTxFrameBuffer);
+static SerLink::Frame writerAckFrame(writerAckFrameBuffer);
+
+static char readerRxFrameBuffer[UART_BUFF_LEN];
+static char readerAckFrameBuffer[UART_BUFF_LEN];
+static SerLink::Frame readerRxFrame(readerRxFrameBuffer);
+static SerLink::Frame readerAckFrame(readerAckFrameBuffer);
+
+static SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer,
+    UART_BUFF_LEN, &writerTxFrame, &writerAckFrame);
+
+static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer,
+    UART_BUFF_LEN, &readerRxFrame, &readerAckFrame, &writer0);
 
 void uartRxHandler(void* pData);
 
@@ -117,7 +134,7 @@ static bool testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* da
   debugPrint->writeLine(debugStr, DebugPrint_defs::UnitTest0);
 
   sprintf(data, "Echo: ");
-  strncpy(&data[6], rxFrame.data, (long) rxFrame.dataLen);
+  strncpy(&data[6], rxFrame.buffer, (long) rxFrame.dataLen);
   *dataLen = rxFrame.dataLen + 6;
 
   return true;
@@ -141,7 +158,7 @@ void SerLinkRxTests::test1()
   initRun(20000);
   InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);
   interruptRunner->RegisterInterruptSchedule(pUartRxInterrupt);
-  SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
+  //SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
 
   debugPrint->writeLine("pA", DebugPrint_defs::Zero);
   //return 0;
@@ -211,7 +228,7 @@ void SerLinkRxTests::instantHandler1()
   initDebug();
   //initSys(5000);
   //SerLink::Reader *reader0 = new SerLink::Reader(READER_CONFIG__READER0_ID);
-  SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
+  //SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
 
   reader0.registerInstantCallback("TST08", testReadHandler);
 
@@ -282,7 +299,8 @@ void SerLinkRxTests::stdRx1()
   char s[256] = {0};
   Event uartRx(uartRxHandler);
   char uartRxDebugStr[128];
-  SerLink::Frame rxFrame;
+  char rxFrameBuffer[UART_BUFF_LEN];
+  SerLink::Frame rxFrame(rxFrameBuffer);
   uint16_t startTick;
   swTimer_tickReset(&startTick);
 
@@ -294,7 +312,7 @@ void SerLinkRxTests::stdRx1()
   initDebug();
   //initSys(5000);
   //SerLink::Reader *reader0 = new SerLink::Reader(READER_CONFIG__READER0_ID);
-  SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
+  //SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer, UART_BUFF_LEN);
 
   initRun(50000);
   InterruptSchedule* pUartRxInterrupt = InterruptSchedule::buildStringEvent(&uartRx, "TST08T0750076ABC07C\n", 5000, 530);
@@ -326,7 +344,7 @@ void SerLinkRxTests::stdRx1()
     reader0.run();
 
     // poll reader0 to check if a frame has been received.
-    if(reader0.getRxFrame(rxFrame))
+    if(reader0.getRxFrame(&rxFrame))
     {
       // Frame received
 
