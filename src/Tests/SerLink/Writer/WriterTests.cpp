@@ -148,19 +148,24 @@ static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, reader
 
 static InterruptSchedule* pUartRxInterrupt;
 
+static Event uartRx(uartRxHandler);
+
+// Frame data buffers
+static char txFrameBuffer[UART_BUFF_LEN];
+static char ackFrameBuffer[UART_BUFF_LEN];
+
 void WriterTests::ackTest1()
 {
   char s[256] = {0};
-  char uartRxDebugStr[128];
+  //char uartRxDebugStr[128];
   volatile char rxBuffer[UART_BUFF_LEN];
-  Event uartRx(uartRxHandler);
+  //Event uartRx(uartRxHandler);
   uint16_t startTick;
   swTimer_tickReset(&startTick);
   char ackBuffer[32];
   uint64_t current = 0;
   bool txFrameSent = false;
-  char txFrameBuffer[UART_BUFF_LEN];
-  char ackFrameBuffer[UART_BUFF_LEN];
+
 
   //SerLink::Frame* txFrame = new SerLink::Frame("TST04", SerLink::Frame::TYPE_UNIDIRECTION, 615, 6, "hello\n");
   static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, txFrameBuffer, 5, "hello");

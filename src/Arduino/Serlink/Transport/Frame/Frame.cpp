@@ -30,7 +30,15 @@ Frame::Frame(char* pProtocol, char type, uint16_t rollCode, char* pBuffer, uint1
 	this->rollCode = rollCode;
 	this->dataLen = dataLen;
 	this->buffer = pBuffer;
-	strncpy(this->buffer, pData, this->dataLen);
+	if(this->dataLen >= Frame::ACK_OK)
+	{
+	  // dataLen field is being used as ack status - so DO NOT copy data into buffer
+	}
+	else
+	{
+	  // Copy data into this frame data buffer
+	  strncpy(this->buffer, pData, this->dataLen);
+	}
 }
 
 void Frame::setProtocol(char* pProtocol)

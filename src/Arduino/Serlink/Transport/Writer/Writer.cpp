@@ -58,7 +58,7 @@ uint8_t Writer::sendFrame(Frame* frame)
 uint8_t Writer::getStatus()
 {
   uint8_t status = this->status;
-  if(this->status = Writer::STATUS_BUSY)
+  if(Writer::STATUS_BUSY == this->status)
   {
     // writer is still busy - do nothing, i.e. don't clear status
   }

@@ -24,9 +24,9 @@
 #include <chrono>
 #include <thread>
 
-char rxBuffer[UART_BUFF_LEN];
-char readerRxBuffer[UART_BUFF_LEN];
-char readerAckBuffer[UART_BUFF_LEN];
+static char rxBuffer[UART_BUFF_LEN];
+static char readerRxBuffer[UART_BUFF_LEN];
+static char readerAckBuffer[UART_BUFF_LEN];
 static char writerTxBuffer[UART_BUFF_LEN];
 
 static char writerTxFrameBuffer[UART_BUFF_LEN];
@@ -46,6 +46,7 @@ static SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, reader
     UART_BUFF_LEN, &readerRxFrame, &readerAckFrame, &writer0);
 
 void uartRxHandler(void* pData);
+Event uartRx(uartRxHandler);
 
 SerLinkRxTests::SerLinkRxTests(){}
 
@@ -144,7 +145,7 @@ static bool testReadHandler(SerLink::Frame &rxFrame, uint16_t* dataLen, char* da
 void SerLinkRxTests::test1()
 {
   char s[256] = {0};
-  Event uartRx(uartRxHandler);
+  //Event uartRx(uartRxHandler);
   char uartRxDebugStr[128];
 
   uint16_t startTick;
@@ -214,7 +215,7 @@ void SerLinkRxTests::test1()
 void SerLinkRxTests::instantHandler1()
 {
   char s[256] = {0};
-  Event uartRx(uartRxHandler);
+  //Event uartRx(uartRxHandler);
   char uartRxDebugStr[128];
 
   uint16_t startTick;
@@ -296,17 +297,17 @@ void SerLinkRxTests::instantHandler1()
 //------------------------------------------------
 void SerLinkRxTests::stdRx1()
 {
-  char s[256] = {0};
-  Event uartRx(uartRxHandler);
-  char uartRxDebugStr[128];
-  char rxFrameBuffer[UART_BUFF_LEN];
-  SerLink::Frame rxFrame(rxFrameBuffer);
+  //char s[256] = {0};
+  //Event uartRx(uartRxHandler);
+  //char uartRxDebugStr[128];
+  static char rxFrameBuffer[UART_BUFF_LEN];
+  static SerLink::Frame rxFrame(rxFrameBuffer);
   uint16_t startTick;
   swTimer_tickReset(&startTick);
 
   uint64_t current = 0;
 
-
+  reader0.init();  // Initialises uart hardware & buffers
 
   //InitTimestamp();
   initDebug();

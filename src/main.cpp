@@ -112,11 +112,11 @@ int main(int argc, char const *argv[])
 	  //BasicHwTests::test1();
 	  //SerLinkTxTests::test1();
 	  //SerLinkRxTests::instantHandler1();
-	  //SerLinkRxTests::stdRx1();
+	  SerLinkRxTests::stdRx1();
 	  //WriterTests::ackTest1();
 	  //SocketTests::TxThenAck1();
 	  //SocketTests::RxThenStdAck();
-	  SocketTests::RxThenPiggyBackAck();
+	  //SocketTests::RxThenPiggyBackAck();
 	  //TransportTests::TxThenAck1();
 	  //TransportTests::RxThenStdAck();
 	  //SerLink::UtilsTests::uint16ToStr();
