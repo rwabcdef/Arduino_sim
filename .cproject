@@ -66,6 +66,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Tests/SerLink/Utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Arduino/ArdMod/Module/LedModule}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Arduino/ArdMod/SerLink/EventSocket}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/Tests/SerLink/EventSocket/LedEvent}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1431514921" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++17" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1098145993" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -129,7 +130,9 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/SimClk"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/TSQueue"/>
 						<entry excluding="hw|SerLink" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests"/>
-						<entry excluding="Utils|Socket|Writer|Tx|Transport|Rx" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink"/>
+						<entry excluding="EventSocket|Utils|Socket|Writer|Tx|Transport|Rx" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink"/>
+						<entry excluding="LedEvent" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/EventSocket"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/EventSocket/LedEvent"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/Rx"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/Socket"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/Transport"/>
@@ -220,7 +223,9 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/SimClk"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/TSQueue"/>
 						<entry excluding="hw|SerLink" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests"/>
-						<entry excluding="Utils|Socket|Writer|Tx|Transport|Rx" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink"/>
+						<entry excluding="EventSocket|Utils|Socket|Writer|Tx|Transport|Rx" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink"/>
+						<entry excluding="LedEvent" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/EventSocket"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/EventSocket/LedEvent"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/Rx"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/Socket"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/Tests/SerLink/Transport"/>

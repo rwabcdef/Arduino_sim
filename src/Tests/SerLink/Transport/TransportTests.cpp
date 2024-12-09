@@ -337,7 +337,7 @@ void TransportTests::RxThenStdAck()
   do
   {
     transport0.run();
-    /*
+
     current = simClk->getCurrent();
     if(4000 == current)
     //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
@@ -360,7 +360,6 @@ void TransportTests::RxThenStdAck()
       //printf("at 30000\n");
       debugPrint->writeLine("at 30000", DebugPrint_defs::Zero);
     }
-    */
 
   }while(!simClk->getDone());
 

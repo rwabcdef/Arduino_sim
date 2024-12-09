@@ -24,16 +24,25 @@ class LedEvent : public Event
     static const char ACTION_OFF = '0';
     static const char ACTION_FLASH = 'F';
 
-    static const char FLASH_DELAY_LEN = 3;
-    static const char FLASH_ON_LEN = 3;
-    static const char FLASH_OFF_LEN = 3;
+    static const char FLASH_ACTION_LEN = 1;
+    static const char FLASH_INITIAL_LEN = 1;
+    static const char FLASH_DELAY_LEN = 2;
+    static const char FLASH_ON_LEN = 2;
+    static const char FLASH_OFF_LEN = 2;
 
     // LedEvent frame string length (includes null termination char)
-    static const uint8_t FRAME_LEN = 1 + FLASH_DELAY_LEN + FLASH_ON_LEN + FLASH_OFF_LEN + 1;
+    static const uint8_t FRAME_LEN = FLASH_ACTION_LEN + FLASH_INITIAL_LEN +
+        FLASH_DELAY_LEN + FLASH_ON_LEN + FLASH_OFF_LEN + 1;
 
-    LedEvent(){};
-    //uint8_t serialise(char* str){};
+    LedEvent();
+
+    // used for testing purposes
+    uint8_t serialise(char* str);
+
+
     bool deSerialise(char* str);
+
+
     void copy(Event* copyEvent);
 
     bool flashInitialOn;

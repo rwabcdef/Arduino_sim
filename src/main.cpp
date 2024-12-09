@@ -24,6 +24,7 @@
 #include "SocketTests.hpp"
 #include "ButtonTests.hpp"
 #include "TransportTests.hpp"
+#include "LedEvent_tests.hpp"
 #include "UtilsTests.hpp"
 
 using namespace std;
@@ -112,7 +113,7 @@ int main(int argc, char const *argv[])
 	  //BasicHwTests::test1();
 	  //SerLinkTxTests::test1();
 	  //SerLinkRxTests::instantHandler1();
-	  SerLinkRxTests::stdRx1();
+	  //SerLinkRxTests::stdRx1();
 	  //WriterTests::ackTest1();
 	  //SocketTests::TxThenAck1();
 	  //SocketTests::RxThenStdAck();
@@ -121,6 +122,7 @@ int main(int argc, char const *argv[])
 	  //TransportTests::RxThenStdAck();
 	  //SerLink::UtilsTests::uint16ToStr();
 	  //SerLink::UtilsTests::strToUint8();
+	  LedEventTests::deSerialise();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
