@@ -11,6 +11,7 @@
 class LedEventTests{
 
 public:
+  static void rxOn();
   static void deSerialise();
 };
 
