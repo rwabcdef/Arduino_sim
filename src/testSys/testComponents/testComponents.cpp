@@ -22,8 +22,8 @@ Event tc_uartRx(tc_uartRxHandler);  // **** MUST be static - otherwise stack ove
 
 InterruptSchedule* tc_pUartRxInterrupt;
 
-char tc_rxFrameFromReader0Buffer[UART_BUFF_LEN];
-SerLink::Frame tc_rxFrameFromReader0(tc_rxFrameFromReader0Buffer);  // received frame from reader0
+//char tc_rxFrameFromReader0Buffer[UART_BUFF_LEN];
+//SerLink::Frame tc_rxFrameFromReader0(tc_rxFrameFromReader0Buffer);  // received frame from reader0
 
 // The uart hardware bit: UDRIE0, is set in uart_write().
 // This function is then called, which sets up a single interrupt,

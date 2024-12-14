@@ -26,6 +26,7 @@
 #include "TransportTests.hpp"
 #include "LedEvent_tests.hpp"
 #include "UtilsTests.hpp"
+#include "LedEvent_tests.hpp"
 
 using namespace std;
 
@@ -122,7 +123,8 @@ int main(int argc, char const *argv[])
 	  //TransportTests::RxThenStdAck();
 	  //SerLink::UtilsTests::uint16ToStr();
 	  //SerLink::UtilsTests::strToUint8();
-	  LedEventTests::deSerialise();
+	  //LedEventTests::deSerialise();
+	  LedEventTests::rxOn();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){
