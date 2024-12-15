@@ -27,6 +27,10 @@ char rxISR_Buffer[UART_BUFF_LEN];
 static char rxFrameFromReader0Buffer[UART_BUFF_LEN];
 static SerLink::Frame rxFrameFromReader0(rxFrameFromReader0Buffer);  // received frame from reader0
 
+static char txFrameBuffer[UART_BUFF_LEN];
+static char ackFrameBuffer[UART_BUFF_LEN];
+static char ackISR_Buffer[UART_BUFF_LEN];
+
 static void dPrint(ArdMod::LedEvent& ledEvent)
 {
   printf("action: %c\n", ledEvent.action);
@@ -94,9 +98,84 @@ void LedEventTests::rxOn()
 }
 
 //-------------------------------------------------------------------
+// Test of tx & ack functionality of writer0 with testComponents & system0 libs.
 void LedEventTests::TxThenAck1()
 {
+  uint64_t current = 0;
+  uint8_t retCode;
+  const uint16_t sLen = 32;
+  char s[sLen] = {0};
+  bool txFrameSent = false;
 
+  // Frame that is initially sent
+  static SerLink::Frame txFrame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, txFrameBuffer, 6, "hello1");
+
+  // Ack frame that is received (i.e. from simulated remote device).
+  static SerLink::Frame ackFrame("TST04", SerLink::Frame::TYPE_ACK, 615, ackFrameBuffer, SerLink::Frame::ACK_OK, "");
+
+  writer0.debugOn = true;
+  reader0.init();  // Initialises uart hardware & buffers
+
+  initDebug();
+  initRun(60000);
+
+  setSet_UDRIE0_CallBack(&tc_Set_UDRIE0_CallBack);
+  setClr_UDRIE0_CallBack(&tc_Clr_UDRIE0_CallBack);
+
+  debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
+
+  sei();
+  simClk->start();
+
+  do
+  {
+    writer0.run();
+    reader0.run();
+
+    current = simClk->getCurrent();
+    if(4000 == current)
+    //if(swTimer_tickCheckTimeout(&mainSwTimerTick, 4))
+    {
+      debugPrint->writeLine("pA", DebugPrint_defs::Zero);
+      //printf("pB");
+
+      //printf("mainThreadId: 0x%x\n", std::hash<std::thread::id>{}(mainThreadId));
+      //printf("intThreadId:  0x%x\n", std::hash<std::thread::id>{}(intThreadId));
+      //x = true;
+
+      //sprintf(uartTxFrame, "hello\n", 0);
+      //uart_write(uartTxFrame);
+
+
+      writer0.sendFrame(&txFrame);                // start send of tx frame
+      txFrameSent = true;
+
+      // Set up ack frame to be received
+      uint8_t retCode;
+      ackFrame.toString(ackISR_Buffer, &retCode);
+
+      tc_pUartRxInterrupt = InterruptSchedule::buildStringEvent(&tc_uartRx, ackISR_Buffer,
+      simClk->getCurrent() + 20000, 530);
+
+      interruptRunner->RegisterInterruptSchedule(tc_pUartRxInterrupt);
+    }
+
+    if(txFrameSent)
+    {
+      uint8_t status = writer0.getStatus();
+      if(status == SerLink::Writer::STATUS_OK){
+        char t[16];
+        writer0.getStatusStr(t);
+        sprintf(s, "writer0 %s\n", t);
+        //printf("%s\n", debugStr);
+        debugPrint->writeLine(s, DebugPrint_defs::UnitTest0);
+        txFrameSent = false;
+      }
+    }
+
+  }while(!simClk->getDone());
+
+  endRun();
 }
 //-------------------------------------------------------------------
 void LedEventTests::deSerialise()
