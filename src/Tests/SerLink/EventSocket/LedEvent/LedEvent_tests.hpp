@@ -16,6 +16,7 @@ public:
 
   //----------------------
   static void TxThenAck1();
+  static void SockTxThenAck1();
 };
 
 

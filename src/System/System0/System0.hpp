@@ -13,7 +13,7 @@
 #include "Frame.hpp"
 #include "Reader_config.hpp"
 #include "Reader.hpp"
-#include "Writer.hpp"
+#include "Transport.hpp"
 
 extern char readerRxBuffer[];
 extern char readerAckBuffer[];
@@ -27,6 +27,14 @@ extern SerLink::Frame writerAckFrame;
 
 extern SerLink::Writer writer0;
 extern SerLink::Reader reader0;
+
+extern char transport0RxFrameBuffer[];
+extern char transport0TxFrameBuffer[];
+
+extern SerLink::Frame transport0RxFrame;
+extern SerLink::Frame transport0TxFrame;
+
+extern SerLink::Transport transport0;
 
 
 #endif /* SYSTEM0_HPP_ */

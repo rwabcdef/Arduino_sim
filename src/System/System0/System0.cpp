@@ -31,3 +31,15 @@ SerLink::Writer writer0(WRITER_CONFIG__WRITER0_ID, writerTxBuffer,
 SerLink::Reader reader0(READER_CONFIG__READER0_ID, readerRxBuffer, readerAckBuffer,
     UART_BUFF_LEN, &readerRxFrame, &readerAckFrame, &writer0);
 
+//----------------------------------------------
+// transport0
+
+char transport0RxFrameBuffer[UART_BUFF_LEN];
+char transport0TxFrameBuffer[UART_BUFF_LEN];
+
+SerLink::Frame transport0RxFrame(transport0RxFrameBuffer);
+SerLink::Frame transport0TxFrame(transport0TxFrameBuffer);
+
+SerLink::Transport transport0(&reader0, &writer0, &transport0RxFrame, &transport0TxFrame);
+//----------------------------------------------
+
