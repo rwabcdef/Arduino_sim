@@ -43,9 +43,14 @@ void Event::copy(Event* copyEvent)
 
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
-EventProducer::EventProducer(Event* event): outpuEvent(event)
+EventProducer::EventProducer()
 {
   this->eventOutputFlag = false;
+}
+
+void EventProducer::init(Event* event)
+{
+  this->outpuEvent = event;
 }
 
 Event* EventProducer::getEventPtr()

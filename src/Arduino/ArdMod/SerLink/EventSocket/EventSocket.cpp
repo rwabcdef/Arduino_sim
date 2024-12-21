@@ -9,16 +9,27 @@
 
 namespace ArdMod{
 
-EventSocket::EventSocket(SerLink::Socket* sock): socket(sock){}
+EventSocket::EventSocket(){}
 
-EventReadSocket::EventReadSocket(SerLink::Socket* sock, char* rxData, Event* event):
-  EventSocket(sock), EventProducer(event), rxData(rxData)
+void EventSocket::init(SerLink::Socket* sock)
 {
-  this->eventOutputFlag = false;
+  this->socket = sock;
+}
+
+//-------------------------------------------------------------------
+EventReadSocket::EventReadSocket(){}
+
+void EventReadSocket::init(SerLink::Socket* sock, char* rxData, Event* event)
+{
+  EventProducer();
+  this->socket = sock;
+  this->rxData = rxData;
+  this->outpuEvent = event;
 }
 
 bool EventReadSocket::hasEvent()
 {
+  //return false;
   if(this->socket->getRxData(this->rxData, &this->rxDataLen))
   {
     // Convert the data from the socket to an event.

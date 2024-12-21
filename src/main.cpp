@@ -124,9 +124,9 @@ int main(int argc, char const *argv[])
 	  //SerLink::UtilsTests::uint16ToStr();
 	  //SerLink::UtilsTests::strToUint8();
 	  //LedEventTests::deSerialise();
-	  //LedEventTests::rxOn();
+	  LedEventTests::rxOn();
 	  //LedEventTests::TxThenAck1();
-	  LedEventTests::SockTxThenAck1();
+	  //LedEventTests::SockTxThenAck1();
 	  //printf("nothing\n");
 	}
 	else if(TESTSYS_mode == TESTSYS_TEST_MODE_UNIT){

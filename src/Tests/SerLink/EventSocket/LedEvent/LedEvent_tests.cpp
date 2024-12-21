@@ -12,6 +12,7 @@
 #include "Global.hpp"
 #include "testSys.hpp"
 #include "swTimer.h"
+#include "ArdMod_LedEvent.hpp"
 #include "Event.hpp"
 #include "cute.h"
 #include "System0.hpp"
@@ -42,10 +43,11 @@ static SerLink::Frame ledSocketTxFrame(ledSocketTxFrameBuffer);
 
 static SerLink::Socket* ledSocket;
 //-----------------------
-static char ledEvSockData[UART_BUFF_LEN];
+// led event socket
+static char ledEvSockData[ArdMod::LedEvent::FRAME_LEN];
 static ArdMod::LedEvent ledEv;
 //static ArdMod::Event* pledEv = (ArdMod::Event*) &ledEv;
-static ArdMod::EventReadSocket ledEvSock(ledSocket, ledEvSockData, &ledEv);
+static ArdMod::EventReadSocket ledEvSock;
 //-----------------------
 
 static void dPrint(ArdMod::LedEvent& ledEvent)
@@ -64,6 +66,8 @@ void LedEventTests::rxOn()
   uint8_t retCode;
   const uint16_t sLen = 32;
   char s[sLen] = {0};
+  char ledSocketRxData[ArdMod::LedEvent::FRAME_LEN] = {0};
+  uint8_t ledSocketRxDataLen;
 
   // Frame that is initially received
   static SerLink::Frame rxISR_Frame("TST04", SerLink::Frame::TYPE_TRANSMISSION, 615, rxISR_FrameBuffer, 1, "1");
@@ -82,6 +86,16 @@ void LedEventTests::rxOn()
   tc_pUartRxInterrupt = InterruptSchedule::buildStringEvent(&tc_uartRx, (const char*)rxISR_Buffer, 6000, 530);
   interruptRunner->RegisterInterruptSchedule(tc_pUartRxInterrupt);
 
+  // initialise ledSocket - don't provide txFrame, in order to save memory
+  ledSocket = transport0.acquireSocket("TST04", &ledSocketRxFrame, &ledSocketTxFrame, 615);
+  if(nullptr == ledSocket)
+  {
+    debugPrint->writeLine("led socket NOT acquired", DebugPrint_defs::Zero);
+    return;
+  }
+
+  ledEvSock.init(ledSocket, ledEvSockData, &ledEv);
+
   debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
 
   sei();
@@ -89,8 +103,9 @@ void LedEventTests::rxOn()
 
   do
   {
-    writer0.run();
-    reader0.run();
+//    writer0.run();
+//    reader0.run();
+    transport0.run();
 
     current = simClk->getCurrent();
     if(4000 == current)
@@ -99,15 +114,32 @@ void LedEventTests::rxOn()
       debugPrint->writeLine("pA", DebugPrint_defs::Zero);
     }
 
-    if(reader0.getRxFrame(&rxFrameFromReader0))
+    if(ledEvSock.hasEvent())
     {
-      // Frame received from reader0.
+      char ser[ArdMod::LedEvent::FRAME_LEN] = {0};
+      ledEv.serialise(ser);
       memset(s, 0, sLen);
-      sprintf(s, "rx frame: ", nullptr);
-      uint8_t retCode = 0;
-      rxFrameFromReader0.toString(&s[10], &retCode);
+      sprintf(s, "ledSocket rx data: %s", ser);
       debugPrint->writeLine(s, DebugPrint_defs::UnitTest0);
     }
+
+//    if(ledSocket->getRxData(ledSocketRxData, &ledSocketRxDataLen))
+//    {
+//      // data received from ledSocket
+//      memset(s, 0, sLen);
+//      sprintf(s, "ledSocket rx data: %s", ledSocketRxData);
+//      debugPrint->writeLine(s, DebugPrint_defs::UnitTest0);
+//    }
+
+//    if(reader0.getRxFrame(&rxFrameFromReader0))
+//    {
+//      // Frame received from reader0.
+//      memset(s, 0, sLen);
+//      sprintf(s, "rx frame: ", nullptr);
+//      uint8_t retCode = 0;
+//      rxFrameFromReader0.toString(&s[10], &retCode);
+//      debugPrint->writeLine(s, DebugPrint_defs::UnitTest0);
+//    }
 
   }while(!simClk->getDone());
 
@@ -219,7 +251,8 @@ void LedEventTests::SockTxThenAck1()
   setSet_UDRIE0_CallBack(&tc_Set_UDRIE0_CallBack);
   setClr_UDRIE0_CallBack(&tc_Clr_UDRIE0_CallBack);
 
-  ledSocket = transport0.acquireSocket("TST04", &ledSocketRxFrame, &ledSocketTxFrame, 615);
+  // initialise ledSocket - don't provide rxFrame, in order to save memory
+  ledSocket = transport0.acquireSocket("TST04", nullptr, &ledSocketTxFrame, 615);
   if(nullptr == ledSocket)
   {
     debugPrint->writeLine("socket NOT acquired", DebugPrint_defs::Zero);

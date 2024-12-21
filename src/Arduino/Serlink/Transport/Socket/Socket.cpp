@@ -35,6 +35,12 @@ void SerLink::Socket::init(char* protocol, Frame *rxFrame, Frame* txFrame,
 
 bool SerLink::Socket::getRxData(char* data, uint8_t* dataLen)
 {
+  if(this->rxFrame == nullptr)
+  {
+    // This is a write only socket (this->rxFrame == nullptr in order to save memory) - so do nothing
+    return false;
+  }
+
   if(this->rxFlag)
   {
     this->rxFlag = false;
@@ -47,6 +53,12 @@ bool SerLink::Socket::getRxData(char* data, uint8_t* dataLen)
 
 bool SerLink::Socket::sendData(char* data, uint16_t dataLen, bool ack)
 {
+  if(this->txFrame == nullptr)
+  {
+    // This is a read only socket (this->txFrame == nullptr in order to save memory) - so do nothing
+    return false;
+  }
+
   if(!this->active)
   {
     return false;
@@ -100,6 +112,12 @@ uint8_t SerLink::Socket::getAndClearSendStatus()
 
 bool SerLink::Socket::getTxFrame(Frame* txFrame)
 {
+  if(this->txFrame == nullptr)
+  {
+    // This is a read only socket (this->txFrame == nullptr in order to save memory) - so do nothing
+    return false;
+  }
+
   if(this->txFlag)
   {
     this->txFrame->copy(txFrame);
@@ -128,6 +146,12 @@ void SerLink::Socket::setWriterDoneStatus(uint8_t status)
 
 void SerLink::Socket::setRxFrame(Frame* rxFrame)
 {
+  if(this->rxFrame == nullptr)
+  {
+    // This is a write only socket (this->rxFrame == nullptr in order to save memory) - so do nothing
+    return;
+  }
+
   if(!this->active)
   {
     return;

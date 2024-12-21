@@ -18,7 +18,8 @@ protected:
   SerLink::Socket* socket;
 
 public:
-  EventSocket(SerLink::Socket* sock);
+  EventSocket();
+  void init(SerLink::Socket* sock);
 };
 
 class EventReadSocket : public EventSocket, public EventProducer{
@@ -27,7 +28,8 @@ protected:
     char* rxData;
     uint8_t rxDataLen;
 public:
-  EventReadSocket(SerLink::Socket* sock, char* rxData, Event* event);
+  EventReadSocket();
+  void init(SerLink::Socket* sock, char* rxData, Event* event);
 
   // over-ridden EventProducer method
   bool hasEvent();

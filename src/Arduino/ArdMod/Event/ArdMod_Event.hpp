@@ -38,7 +38,8 @@ protected:
   bool eventOutputFlag;
   Event* outpuEvent;
 public:
-  EventProducer(Event* event);
+  EventProducer();
+  void init(Event* event);
   virtual Event* getEventPtr();
   virtual bool hasEvent();
 };
