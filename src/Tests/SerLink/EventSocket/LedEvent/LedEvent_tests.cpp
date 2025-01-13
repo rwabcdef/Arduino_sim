@@ -19,6 +19,7 @@
 #include "testComponents.hpp"
 #include "Transport.hpp"
 #include "EventSocket.hpp"
+#include "ArdMod_LedModule.hpp"
 #include <string.h>
 #include <stdio.h>
 
@@ -48,6 +49,9 @@ static char ledEvSockData[ArdMod::LedEvent::FRAME_LEN];
 static ArdMod::LedEvent ledEv;
 //static ArdMod::Event* pledEv = (ArdMod::Event*) &ledEv;
 static ArdMod::EventReadSocket ledEvSock;
+//-----------------------
+static ArdMod::LedEvent ledModEv;
+static ArdMod::LedModule ledModule(GPIO_REG__PORTD, 7, &ledModEv);
 //-----------------------
 
 static void dPrint(ArdMod::LedEvent& ledEvent)
@@ -106,6 +110,7 @@ void LedEventTests::rxOn()
 //    writer0.run();
 //    reader0.run();
     transport0.run();
+    ledModule.run();
 
     current = simClk->getCurrent();
     if(4000 == current)
@@ -121,6 +126,8 @@ void LedEventTests::rxOn()
       memset(s, 0, sLen);
       sprintf(s, "ledSocket rx data: %s", ser);
       debugPrint->writeLine(s, DebugPrint_defs::UnitTest0);
+
+      ledModule.setEvent(&ledEv);
     }
 
 //    if(ledSocket->getRxData(ledSocketRxData, &ledSocketRxDataLen))

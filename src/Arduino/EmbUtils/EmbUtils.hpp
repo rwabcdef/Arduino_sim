@@ -36,5 +36,18 @@
 extern const uint8_t BITMASK_BIT[];
 extern const uint8_t INV_BITMASK_BIT[];
 
+//--------------------------------------------------------------------------------
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Appends the dest string with the specified register name and value, e.g.:
+// PORTD: 0xc5
+void appendStringRegister(char* dest, uint8_t startIndex, char* regName, uint8_t* reg);
+
+#ifdef __cplusplus
+}
+#endif
+//--------------------------------------------------------------------------------
 
 #endif /* EMBUTILS_EMBUTILS_HPP_ */

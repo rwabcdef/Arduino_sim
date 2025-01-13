@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "hw_gpio.h"
 #include "StateMachine.hpp"
 #include "DebugUser.hpp"
 #include "ArdMod_LedEvent.hpp"

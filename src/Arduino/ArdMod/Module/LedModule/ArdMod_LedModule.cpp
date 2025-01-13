@@ -13,7 +13,6 @@
  */
 
 #include "ArdMod_LedModule.hpp"
-#include "hw_gpio.h"
 
 // State codes (do not use 0)
 #define ON 1
@@ -26,6 +25,7 @@ LedModule::LedModule(uint8_t port, uint8_t pin, Event* event)
 : port(port), pin(pin), EventConsumer(event)
 {
   //this->inputEvent = false;
+  this->currentState = OFF;
   this->periodCount = 0;
 }
 
@@ -158,7 +158,7 @@ uint8_t LedModule::common()
 {
   LedEvent* event = (LedEvent*) this->inputEvent;
 
-  if(this->eventInputFlag)
+  if(false == this->eventInputFlag)
   {
     // No new input event
     this->eventInputFlag = false;  // clear flag
