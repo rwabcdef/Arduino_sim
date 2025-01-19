@@ -8,6 +8,7 @@
 #include "hw_gpio.h"
 #if defined(ENV_CONFIG__SYSTEM_PC)
 #include "DebugPrintFromC.hpp"
+#include "ATmega328Debug.h"
 #endif
 
 const uint8_t bitMask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
@@ -72,7 +73,11 @@ void gpio_setPinDirection(uint8_t port, uint8_t pin, uint8_t direction)
   }
   else{ /* Invalid direction - do nothing */ }
 
-
+#if defined(ENV_CONFIG__SYSTEM_PC)
+    char s[64] = {0};
+    ATmega328Debug_sprintPortD(s);
+    debugWrite(s, Gpio);
+#endif
 }
 //--------------------------------------------------------------------------------
 void gpio_setPinHigh(uint8_t port, uint8_t pin)
@@ -86,8 +91,10 @@ void gpio_setPinHigh(uint8_t port, uint8_t pin)
     else{ /* do nothing */ }
 
 #if defined(ENV_CONFIG__SYSTEM_PC)
-    char s[12] = {0};
-    getPinSetDebugStr(port, pin, true, s);
+    char s[64] = {0};
+    //getPinSetDebugStr(port, pin, true, s);
+    //debugWrite(s, Gpio);
+    ATmega328Debug_sprintPortD(s);
     debugWrite(s, Gpio);
 #endif
 
@@ -104,8 +111,10 @@ void gpio_setPinLow(uint8_t port, uint8_t pin)
   else{ /* do nothing */ }
 
 #if defined(ENV_CONFIG__SYSTEM_PC)
-    char s[12] = {0};
-    getPinSetDebugStr(port, pin, false, s);
+    char s[64] = {0};
+    //getPinSetDebugStr(port, pin, false, s);
+    //debugWrite(s, Gpio);
+    ATmega328Debug_sprintPortD(s);
     debugWrite(s, Gpio);
 #endif
 }

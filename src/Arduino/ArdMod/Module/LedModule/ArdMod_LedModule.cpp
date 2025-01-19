@@ -36,6 +36,11 @@ void LedModule::setEvent(LedEvent& event)
   event.copy(&this->event);
 }*/
 
+void LedModule::init()
+{
+  gpio_setPinDirection(this->port, this->pin, GPIO_PIN_DIRECTION__OUT);
+}
+
 void LedModule::run()
 {
   switch(this->currentState)

@@ -158,7 +158,7 @@ void setClr_UDRIE0_CallBack(setClearIntBitCallBack cb);
 
 //---------------------------------------------------------
 //static const char ATMEGA328__REG_NAME_PORTD[] = "PORTD\0";
-#define ATMEGA328__REG_NAME_PORTD "PORTD\0"
+//#define ATMEGA328__REG_NAME_PORTD "PORTD\0"
 
 //---------------------------------------------------------
 

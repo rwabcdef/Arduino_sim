@@ -20,6 +20,7 @@
 #include "Transport.hpp"
 #include "EventSocket.hpp"
 #include "ArdMod_LedModule.hpp"
+#include "ATmega328Debug.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -99,6 +100,7 @@ void LedEventTests::rxOn()
   }
 
   ledEvSock.init(ledSocket, ledEvSockData, &ledEv);
+  ledModule.init();
 
   debugPrint->writeLine("pStart", DebugPrint_defs::Zero);
 
