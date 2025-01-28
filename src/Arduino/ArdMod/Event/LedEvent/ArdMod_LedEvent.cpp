@@ -38,9 +38,9 @@ uint8_t LedEvent::serialise(char* str)
 
     SerLink::Utils::uint16ToStr(this->flashDelayPeriods, &str[i], LedEvent::FLASH_DELAY_LEN);
     i += 2;
-    SerLink::Utils::uint16ToStr(this->flashOnPeriods, &str[i], LedEvent::FLASH_DELAY_LEN);
+    SerLink::Utils::uint16ToStr(this->flashOnPeriods, &str[i], LedEvent::FLASH_ON_LEN);
     i += 2;
-    SerLink::Utils::uint16ToStr(this->flashOffPeriods, &str[i], LedEvent::FLASH_DELAY_LEN);
+    SerLink::Utils::uint16ToStr(this->flashOffPeriods, &str[i], LedEvent::FLASH_OFF_LEN);
     i += 2;
   }
   str[i++] = '\n';  // endl terminate for transmission test

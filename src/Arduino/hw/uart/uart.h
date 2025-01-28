@@ -8,7 +8,7 @@
 #include "env.h"
 #include<stdint.h>
 
-#define UART_BUFF_LEN 64
+#define UART_BUFF_LEN 21
 
 //--------------------------------------------------------------------------------
 void uart_init(char* pRxBuffer, uint8_t rxBufferLen);

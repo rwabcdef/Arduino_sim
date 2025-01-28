@@ -150,7 +150,7 @@ uint8_t Reader::idle()
 			this->rxFrame->copy(this->ackFrame);
 			this->ackFrame->type = Frame::TYPE_ACK;
 			this->ackFrame->dataLen = Frame::ACK_OK;
-			memset(this->ackFrame->buffer, 0, Frame::MAX_DATALEN);
+			memset(this->ackFrame->buffer, 0, Frame::LEN_HEADER);
 
 			readHandler instantHandler = this->getInstantHandler(this->rxFrame->protocol);
 			if(instantHandler == nullptr)
