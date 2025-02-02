@@ -56,7 +56,14 @@ filePairs = [
              FilePair(r'uart.c', r'Arduino\hw\uart\uart.c'),
              FilePair(r'uart_wrapper.hpp', r'Arduino\cpp_wrappers\uart_wrapper.hpp'),
              FilePair(r'hw_gpio.h', r'Arduino\hw\gpio\hw_gpio.h'),
-             FilePair(r'hw_gpio.c', r'Arduino\hw\gpio\hw_gpio.c')
+             FilePair(r'hw_gpio.c', r'Arduino\hw\gpio\hw_gpio.c'),
+             FilePair('Socket.hpp', 'Arduino\Serlink\Transport\Socket\Socket.hpp'),
+             FilePair('Socket.cpp', 'Arduino\Serlink\Transport\Socket\Socket.cpp'),
+             FilePair('Transport_config.hpp', 'Arduino\Serlink\Transport\Transport_config.hpp'),
+             FilePair('Transport.hpp', 'Arduino\Serlink\Transport\Transport.hpp'),
+             FilePair('Transport.cpp', 'Arduino\Serlink\Transport\Transport.cpp'),
+             FilePair('System0.hpp', 'System\System0\System0.hpp'),
+             FilePair('System0.cpp', 'System\System0\System0.cpp')
              ]
 
 toSimFilePairs = [

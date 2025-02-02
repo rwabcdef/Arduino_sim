@@ -8,7 +8,7 @@
 #ifndef SOCKET_HPP_
 #define SOCKET_HPP_
 
-#include "Socket_config.hpp"
+//#include "Socket_config.hpp"
 #include "Writer.hpp"
 #include "Reader.hpp"
 #include "StateMachine.hpp"
