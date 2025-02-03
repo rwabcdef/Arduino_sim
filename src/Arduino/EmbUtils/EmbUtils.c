@@ -5,7 +5,8 @@
  *      Author: rw123
  */
 
-#include "EmbUtils.hpp"
+#include "EmbUtils.h"
+
 #include <stdio.h>
 
 const uint8_t BITMASK_BIT[] = {BITMASK_BIT_0, BITMASK_BIT_1, BITMASK_BIT_2,

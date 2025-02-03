@@ -5,8 +5,8 @@
  *      Author: rw123
  */
 
-#ifndef EMBUTILS_EMBUTILS_HPP_
-#define EMBUTILS_EMBUTILS_HPP_
+#ifndef EMBUTILS_EMBUTILS_H_
+#define EMBUTILS_EMBUTILS_H_
 
 #include<stdint.h>
 
@@ -33,6 +33,9 @@
 #define CLR_BIT(reg, bit) (reg &= INV_BITMASK_BIT[bit])
 #define TOGGLE_BIT(reg, bit) if(CHECK_BIT(reg, bit)){CLR_BIT(reg, bit);}else{SET_BIT(reg, bit);}
 
+#define sbi(reg, bit) SET_BIT(reg, bit)
+#define cbi(reg, bit) CLR_BIT(reg, bit)
+
 extern const uint8_t BITMASK_BIT[];
 extern const uint8_t INV_BITMASK_BIT[];
 
@@ -50,4 +53,4 @@ void appendStringRegister(char* dest, uint8_t startIndex, char* regName, uint8_t
 #endif
 //--------------------------------------------------------------------------------
 
-#endif /* EMBUTILS_EMBUTILS_HPP_ */
+#endif /* EMBUTILS_EMBUTILS_H_ */

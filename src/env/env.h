@@ -16,7 +16,11 @@
 #include<ATmega328.hpp>
 
 #elif defined(ENV_CONFIG__SYSTEM_ARDUINO_UNO_R3)
-#include <Arduino.h>
+//#include <Arduino.h>
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 
 #endif
 

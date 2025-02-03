@@ -6,6 +6,7 @@
  */
 
 #include "hw_gpio.h"
+#include <stdlib.h>
 #if defined(ENV_CONFIG__SYSTEM_PC)
 #include "DebugPrintFromC.hpp"
 #include "ATmega328Debug.h"

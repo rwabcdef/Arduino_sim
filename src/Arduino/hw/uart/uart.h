@@ -6,6 +6,7 @@
 //#include "wiring_private.h"
 #endif
 #include "env.h"
+#include<stdbool.h>
 #include<stdint.h>
 
 #define UART_BUFF_LEN 21

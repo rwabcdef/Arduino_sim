@@ -2,7 +2,8 @@ import os, shutil
 import array
 
 #embeddedRoot = r'C:\Users\rw123\OneDrive\Documents\Rob\software\Embedded\Arduino\Train\controller\v1\trn_cont_v1'
-embeddedRoot = r'C:\Users\rw123\OneDrive\Documents\Rob\software\Embedded\Arduino\Train\controller\v1\trn_cont_v1b'
+#embeddedRoot = r'C:\Users\rw123\OneDrive\Documents\Rob\software\Embedded\Arduino\Train\controller\v1\trn_cont_v1b'
+embeddedRoot = r'C:\Users\rw123\OneDrive\Documents\Rob\software\Embedded\Arduino\Train\controller\v2'
 
 simulatedRoot = r'C:\Users\rw123\OneDrive\Documents\Rob\software\C++\eclipse\embed_sim\arduino\prj3\src'
 
@@ -35,6 +36,8 @@ filePairs = [
              #FilePair('env_config.h', 'env\env_config.h'),
              FilePair('env.h', 'env\env.h'),
              FilePair('env.hpp', 'env\env.hpp'),
+             FilePair('EmbUtils.h', 'Arduino\EmbUtils\EmbUtils.h'),
+             FilePair('EmbUtils.c', 'Arduino\EmbUtils\EmbUtils.c'),
              FilePair('DebugPrint.hpp', 'DebugPrint\DebugPrint.hpp'),
              FilePair('DebugPrint.cpp', 'DebugPrint\DebugPrint.cpp'),
              FilePair('DebugUser.hpp', 'Arduino\Serlink\DebugUser\DebugUser.hpp'),
